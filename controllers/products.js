@@ -1,6 +1,6 @@
 const { response } = require('express');
 const { default: mongoose } = require('mongoose');
-const {user,TrainingCenter,Course} =  require('../modules/products')
+const {user,TrainingCenter,Course, order} =  require('../modules/products')
 
 const getCourse = async (req ,res)=>{
      //get product id from http header
@@ -9,12 +9,18 @@ const getCourse = async (req ,res)=>{
     //send err if product is not exsists
     await Course.find({_id:courseId}).then(async (response)=>{
         //send response back to the server
-        if(response[0]){ 
+        if(response[0]){
           //send response back
           let CourseValue = response[0].toObject() 
           const CenterValue = await TrainingCenter.find({_id:response[0].TrainingCenterId})
           if (CenterValue.length)
           CourseValue.Center= CenterValue[0]
+          //check orders
+          const Orders = await order.find({courseID:CourseValue._id})
+          console.log(Orders)
+          if (Orders.length)
+          CourseValue.status = "reserved"
+
           return res.json(CourseValue)
         }
         else {
@@ -23,6 +29,7 @@ const getCourse = async (req ,res)=>{
         }  
     }).catch((err)=>{
       //send err back
+      console.log(err)
       return res.status(403).send(err.message)
     })
 }

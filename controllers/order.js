@@ -9,24 +9,22 @@ const pursh = async (req , res)=>{
       //fetch products data from data base
       console.log(req.body)
       
-      const courseID = RequestBody[0].courseID
+      const courseID = RequestBody.courseID
       //find prducts in data base with IDs
+      console.log("courseID " , courseID)
       let db_courses = await Course.find({_id:courseID})
-      console.log(JSON.stringify(db_courses))
+      console.log( JSON.stringify(db_courses))
       if (!db_courses.length){
             res.json({"message":"course not exsists"})
       }
-      let NewOrders= await order.find({'userId':userID,'courseID':courseID})
+      let PrevOrders= await order.find({'userId':userID,'courseID':courseID})
       //
-      if(!PrevOrders.length){
-         NewOrders = await new order({'state':"pending",'userId':userID,'courseID':courseID}).save()
-      }else if(NewOrders.state == "active"){
+      if(PrevOrders.length){
          return res.status(400).json({"Message":"you already paid for this course"})
       }
       //prepare stripe order details object
       let stripe_orders = db_courses.map((item,index) =>{
-            return{
-                     price_data:{
+            return{price_data:{
                                  currency:'usd',
                                  product_data:{
                                     productId:item._id,
@@ -34,20 +32,19 @@ const pursh = async (req , res)=>{
                                  },
                                  unit_amount: Number(Math.floor(item.coste * 100))          
                                  },
-                     quantity:1,
-                  }
+                     quantity:1}
       })
       //check order
       console.log(stripe_orders)
       order.userID = userID
       if(db_courses && db_courses.length !== 0){
-         const session = await stripe.checkout.sessions.create({
+         await stripe.checkout.sessions.create({
             payment_method_types :['card'],
             mode:'payment',
             line_items:stripe_orders,
-            metadata:{orders:JSON.stringify({'state':"pending",'userId':userID,'courseID':courseID,orderId:NewOrders._id})},
-            success_url: 'http://localhost:5500/frontend/homepage.html#/',
-            cancel_url: 'http://localhost:5500/frontend/homepage.html#/'
+            metadata:{orders:JSON.stringify({'state':"pending",'userId':userID,'courseID':courseID})},
+            success_url: 'http://localhost:3000/',
+            cancel_url: 'http://localhost:3000/'
          }).then((resulte)=>{
             //return the response to the user   
             return res.json(resulte)
@@ -64,7 +61,9 @@ const pursh = async (req , res)=>{
 
 
 const updateProduct  = async (data) =>{
-      await order.updateOne({'_id':data.orderId},{'state':'active'})  
+      console.log(data)
+      const NewOrders = await new order({'state':"active",'userId':data.userId,'courseID':data.courseID}).save()
+      return NewOrders  
 }
 const webhook_callback =  (req , res)=>{
    //get body contents
