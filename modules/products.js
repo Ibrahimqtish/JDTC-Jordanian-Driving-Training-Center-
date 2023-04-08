@@ -16,7 +16,7 @@ const CoursesSchema = new Schema({
       end_time        :   {type:Number,required:false},
       duration        :   {Type:Number,required:false},
       start_date      :   {type:Date,required:false},
-      carsID          :   {type:mongoose.Schema.ObjectId,required:false},
+      carsID          :   {type:mongoose.Schema.ObjectId,required:true},
       numberOfSessions:   {type:String,require:true}
 })
 

@@ -4,6 +4,7 @@ const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client("591903598674-746pln3so790djugv2no0n6024gnfg6h.apps.googleusercontent.com");
 const public_keys = require("../google-puclic-keys");
 const fs = require("fs");
+const { PraperImage, PraperSingleImage } = require("../Utils/utils");
 
 
 const  editUserInformation = async (req, res) => {
@@ -167,6 +168,7 @@ const add_user_profile_pictures = async(req , res)=>{
     console.log(userId);
     if (userId) {
       const userData = user.find({ _id: userId }).then((ressponse) => {
+        ressponse[0].profile_pic = ressponse[0].profile_pic ? PraperSingleImage(ressponse[0].profile_pic,req.headers.host) : ""
         return res.json(ressponse[0]);
       });
     } else {
@@ -326,6 +328,9 @@ const getAllUsers = async (req,res)=>{
     
     if(resulte){
       //send response back
+      for (let i = 0; i < resulte.length;i++){
+        resulte[i].profile_pic =  PraperSingleImage(resulte[i].profile_pic,req.headers.host)
+      }
       res.status(200).json(resulte)  
     }
     else {

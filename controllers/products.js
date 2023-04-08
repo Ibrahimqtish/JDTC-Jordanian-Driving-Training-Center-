@@ -1,26 +1,36 @@
 const { response } = require('express');
 const { default: mongoose } = require('mongoose');
-const {user,TrainingCenter,Course, order} =  require('../modules/products')
+const {user,TrainingCenter,Course, order} =  require('../modules/products');
+const { PraperImage } = require('../Utils/utils');
 
 const getCourse = async (req ,res)=>{
      //get product id from http header
     const courseId = req.params.courseId;
     //find product in mangoDB database and then send response
-    //send err if product is not exsists
+    //send err if product is not exsists         
+
     await Course.find({_id:courseId}).then(async (response)=>{
         //send response back to the server
         if(response[0]){
           //send response back
-          let CourseValue = response[0].toObject() 
+          let CourseValue = response[0].toObject()
+          
           const CenterValue = await TrainingCenter.find({_id:response[0].TrainingCenterId})
-          if (CenterValue.length)
-          CourseValue.Center= CenterValue[0]
+          let CenterObjectValue = CenterValue[0].toObject()
+          console.table(CenterObjectValue)
+          
+          PraperImage(CourseValue.photos,req.headers.host)
+          if (CenterValue.length){
+            PraperImage(CenterObjectValue.photos,req.headers.host)
+            CourseValue.Center= CenterObjectValue
+            console.log(CenterObjectValue)
+          }
+          
           //check orders
           const Orders = await order.find({courseID:CourseValue._id})
           console.log(Orders)
           if (Orders.length)
           CourseValue.status = "reserved"
-
           return res.json(CourseValue)
         }
         else {
@@ -36,12 +46,12 @@ const getCourse = async (req ,res)=>{
 
 const getUserProducts = async(req , res)=>{
   const useId = req.userId;
-  if (useId){
-   const products = await product.find({userId:useId})
-   if (products)res.json(products)
-   else res.status(400)
+    if (useId){
+    const products = await product.find({userId:useId})
+    if (products)res.json(products)
+    else res.status(400)
+    }
   }
-}
 //get all products and send it to the user
 const getAllProducts = async (req , res)=>{
   try {
@@ -83,6 +93,10 @@ const getAllProducts = async (req , res)=>{
     //check name
     resulte = await resulte
     
+    for (let i = 0; i < resulte.length;i++){
+      PraperImage(resulte[i].photos,req.headers.host)       
+    }
+
     if(resulte){
       //send response back
       res.status(200).json(resulte)  
@@ -102,6 +116,7 @@ const upload_coures_pictures = async(req , res)=>{
   try{
     console.log("Uploading Image ",req.files)
     const courseId = req.headers['courseid']
+    console.log(req.headers['courseid'])
     if(req.files && courseId){
       const urls = []
       //find product by ID
