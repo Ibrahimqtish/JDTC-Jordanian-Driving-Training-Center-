@@ -2,7 +2,7 @@ require('dotenv').config()
 
 function CheckUrl(url){
        const UrlAsList= url.split(":")
-       if ((UrlAsList.length > 1) && UrlAsList[0] =="http" || UrlAsList[0] == "https"){
+       if ((UrlAsList.length > 1) && (UrlAsList[0] =="http" || UrlAsList[0] == "https")){
          console.log(UrlAsList)    
          return true
        }
@@ -25,5 +25,6 @@ function PraperSingleImage(url,host){
     if (url && !CheckUrl(url)){
       return "http://"+host+"/"+url                     
     }
+    return url
 }
 module.exports={PraperSingleImage,PraperImage}
