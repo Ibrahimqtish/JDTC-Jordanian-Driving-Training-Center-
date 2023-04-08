@@ -14,6 +14,7 @@ function CheckUrl(url){
 function PraperImage(urls,host){
        const result = []
        for (let i = 0; i < urls.length;i++){
+        console.log("Host " , host)
         console.log("loop") 
              if (!CheckUrl(urls[i])){
                 urls[i]="http://"+host+"/"+urls[i]                     
