@@ -23,9 +23,10 @@ const  editUserInformation = async (req, res) => {
       res.sendStatus(err.message);
     }
   }
+  
   const upload_profile_picture = (req, res) => {
     console.log(req.files);
-    if (req.files["profile_pic"]) {
+    if (req.files["profile_pic"] && req.userId) {
       let profile_picture = req.files.profile_pic;
       let url = `/users/${req.userId}/profile_picture/${profile_picture.name}`;
       //updata user informations
@@ -83,6 +84,74 @@ const add_user_profile_pictures = async(req , res)=>{
       res.json({message:err.message})
     }
   
+}
+const edit_user_profile_pictures = async(req , res)=>{
+  try{
+    console.log("edit user image " ,req.userId)
+    console.log("req.files " ,req.files)
+    const user_id = req.userId
+    if(req.files && user_id){
+      const urls = []
+      //find product by ID
+      user.find({_id:user_id}).then(async triningCenter=>{
+        //create new promise to resolve the moved Imges
+        new Promise((resol ,rej) =>{
+          //loop all over the files
+          Object.keys(req.files).forEach((item,index)=>{
+            //Create url and move the file to it
+            const url = `images/Users/${user_id}/UserProfileImage/${req.files[item].name}`
+            req.files[item].mv(url).then(newurl =>{
+              urls.push(url)
+              if(index === Object.keys(req.files).length -1){
+                resol(urls)                       
+              }
+            }).catch(err=>{
+              console.log("err 1 " + err.message)
+              return res.status(400).json({message:"error uploading imgs"})
+            })
+          })
+        }).then((movedFiles =>{
+          if(movedFiles.length !== 0){
+              console.log("updating database")
+              user.updateOne({_id:user_id},{$set:{profile_pic:movedFiles[0]}}).then(resulte=>{res.status(200).json({message:"product photo has been updated"})})}
+        }))
+      }).catch(err=>{
+        console.log("err 2 " + err.message)
+        return res.status(400).json({message:"no product with this Id"})
+      })
+      //loop all over the elements
+    }else{
+      return res.status(400).json({message:"data provided not correct"})
+    }
+  }catch(err){
+    res.json({message:err.message})
+  }
+
+}
+
+const edit_user_documents = async(req , res)=>{
+  try{
+      const userId = req.userId
+      if (req.files && userId){
+          const urls= {}
+          for (let [key,value] of Object.entries(req.files)){
+            const name = value.mimetype.split('/')[1] 
+            const url = `images/Users/${userId}/userdocs/${key}/${key +"."+name}`
+            await value.mv(url)
+            urls[key] = url
+            console.log(urls)
+          }
+          await user.updateOne({_id:userId},{$set:urls}).then(resulte=>{return res.status(200).json(resulte)}).catch(err=>{
+            console.log(err)
+          })
+      }else{
+        console.log(err)        
+        return res.status(405).json({"message":"user id and files are required"})
+      }
+  }catch(err){
+       console.log(err)
+       return res.status(405).json({"message":err.message})
+  }
 }
 
 
@@ -169,6 +238,10 @@ const add_user_profile_pictures = async(req , res)=>{
     if (userId) {
       const userData = user.find({ _id: userId }).then((ressponse) => {
         ressponse[0].profile_pic = ressponse[0].profile_pic ? PraperSingleImage(ressponse[0].profile_pic,req.headers.host) : ""
+        ressponse[0].driving_license_front = ressponse[0].driving_license_front ? PraperSingleImage(ressponse[0].driving_license_front,req.headers.host) : ""
+        ressponse[0].driving_license_back = ressponse[0].driving_license_back ? PraperSingleImage(ressponse[0].driving_license_back,req.headers.host) : ""
+        ressponse[0].citizenship_id_front = ressponse[0].citizenship_id_front ? PraperSingleImage(ressponse[0].citizenship_id_front,req.headers.host) : ""
+        ressponse[0].citizenship_id_back = ressponse[0].citizenship_id_back ? PraperSingleImage(ressponse[0].citizenship_id_back,req.headers.host) : ""
         return res.json(ressponse[0]);
       });
     } else {
@@ -213,6 +286,10 @@ const add_user_profile_pictures = async(req , res)=>{
     }
   }
 
+const loginWithGoogle = async (req,res)=>{
+  console.log(req.headers['auth-key'])
+  res.json({"message":req.headers['auth-key']})
+}
   //login with email and passoword
 const  login = async (req, res) => {
     try {
@@ -246,7 +323,7 @@ const  login = async (req, res) => {
   
 
 //login with email and passoword
-const  admin_login = async (req, res) => {
+const admin_login = async (req, res) => {
   try {
     let email = req.body.email || undefined;
     const password = req.body.password || undefined;
@@ -259,6 +336,7 @@ const  admin_login = async (req, res) => {
       if (userData[0]){
         const user_group =  await userGroup.find({_id:userData[0].group_id});
         if(user_group[0].code === 'ADMIN'){
+          console.log(" user_group[0].code " ,user_group[0].code)
             const sign = jwt.sign({ userId: userData[0]._id },process.env.ACCESS_TOKEN_SECRET);
             console.log("login done!");
             return res.json({ session_key: sign });
@@ -299,6 +377,13 @@ const  admin_login = async (req, res) => {
       return res.sendStatus(400);
     }
   };
+const getUserById = async (req,res)=>{
+  const id = req.params.id
+  console.log("user id " , id)
+  const userData = await user.find({_id:id})
+  console.log(" userData " ,userData)
+  return res.json(userData)
+}
 
 //get all products and send it to the user
 const getAllUsers = async (req,res)=>{
@@ -351,12 +436,37 @@ const getUserGroups = async (req,res)=>{
     res.sendStatus(400)
   }
 }
-module.exports = {addNewUser,
-                  add_user_profile_pictures,
-                  getUserGroups,removeUser,
-                  login, g_auth0,
-                  getuserprofile,addUser,
-                  upload_profile_picture,
-                  editUserInformation,getAllUsers,
-                  admin_login
-                };
+const editUserInfo = async (req,res)=>{
+      try{
+          const id =  req.params.id
+          const data=req.body
+          const newData = await user.updateOne({_id:id},{$set:data})
+          res.json(newData)
+      }catch(err){
+          console.log(err.message)
+          res.json({"message":err.message})
+      }
+}
+const editUserProfile = async (req,res)=>{
+  try{
+      const id = req.userId
+      console.log("editing user account with id " , id)
+      const data=req.body
+      const newData = await user.updateOne({_id:id},{$set:data})
+      res.json(newData)
+  }catch(err){
+      console.log(err.message)
+      res.json({"message":err.message})
+  }
+}
+module.exports={addNewUser,
+                add_user_profile_pictures,
+                getUserGroups,removeUser,
+                login, g_auth0,
+                getuserprofile,addUser,
+                upload_profile_picture,
+                editUserInformation,getAllUsers,
+                admin_login,editUserInfo,
+                getUserById,editUserProfile,
+                edit_user_profile_pictures,
+                edit_user_documents,loginWithGoogle};

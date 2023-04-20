@@ -5,9 +5,10 @@ const {getAllProducts,
       getCourse,
       addCourse,
       editeProduct,
-      deleteProduct,
+      deleteProduct,myCourses,
       upload_coures_pictures,
-      getUserProducts} = require('../controllers/products')
+      getUserProducts,getCoursesByCenterId,
+      editCourse} = require('../controllers/products')
 
 authorization= require('../middleWares/auth')
 //Router Class
@@ -30,9 +31,10 @@ class ProductRouter{
             //add product picturs
             this.router.post('/addcouresimages',  upload_coures_pictures)
             //edit product
-            this.router.put('/editproduct/:productId',authorization,editeProduct)
-            //delete product
-            this.router.delete('/deleteproduct/:productId',authorization, deleteProduct)
+            this.router.delete('/deleteproduct/:productId',authorization, deleteProduct)           
+            this.router.put('/editCourse/:id',editCourse)
+            this.router.get('/mycourses',authorization,myCourses)
+            this.router.get('/get-courses-by-center-id/:id',getCoursesByCenterId)
   }
 }
 const router = new ProductRouter() 

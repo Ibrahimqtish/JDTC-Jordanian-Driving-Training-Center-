@@ -17,7 +17,8 @@ function PraperImage(urls,host){
         console.log("Host " , host)
         console.log("loop") 
              if (!CheckUrl(urls[i])){
-                urls[i]="http://"+host+"/"+urls[i]                     
+                urls[i]="http://"+host+"/"+urls[i]
+                result.push(urls[i])                     
              }
        }
        return result

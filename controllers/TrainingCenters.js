@@ -1,5 +1,6 @@
 const { response } = require('express');
-const {user,TrainingCenter,Course} =  require('../modules/products')
+const {TrainingCenter} =  require('../modules/products');
+const { PraperImage } = require('../Utils/utils');
 
 //get all products and send it to the user
 const getAllTrainingCenters = async (req , res)=>{
@@ -30,6 +31,11 @@ const getAllTrainingCenters = async (req , res)=>{
     //check name
     resulte = await resulte
     
+    for (let i = 0 ; i < resulte.length;i++){
+            console.log(resulte[i].photos)
+            PraperImage(resulte[i].photos,req.headers.host) 
+            console.log("fullPathImages " , resulte[i].fullPathImages)
+    }
     if(resulte){
       //send response back
       res.status(200).json(resulte)  
@@ -98,5 +104,31 @@ const upload_product_pictures = async(req , res)=>{
     }
   
 }
-
-module.exports={addTrainingCenter,upload_product_pictures,getAllTrainingCenters}
+async function getTraningCenterById(req,res){
+  try{
+      const id = req.params.id
+      console.log("id " ,id)
+      const result = await TrainingCenter.findOne({_id:id})
+      PraperImage(result.photos,req.headers.host)
+      console.debug("getTraningCenterById " + id )
+      res.json(result)
+  }catch(err){
+    console.log(err)
+  }
+}
+const editTrainingCenter = async (req ,res)=>{
+  try{
+    const Data = req.body
+    const id = req.params.id
+    console.log(req.body)
+    //check basic params
+    if (!(Data.name && Data.description))return res.status(400).json({"Message":"Lack Of Params"})
+    //save and return response
+    const CreatedData=await TrainingCenter.updateOne({_id:id},{$set:Data})
+    //return response
+    return res.json(CreatedData)
+  }catch(err){
+    res.json({"message":err.message})
+  }
+}
+module.exports={addTrainingCenter,upload_product_pictures,getAllTrainingCenters,getTraningCenterById,editTrainingCenter}

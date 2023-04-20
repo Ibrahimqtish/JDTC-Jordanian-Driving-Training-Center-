@@ -1,7 +1,8 @@
 const { response } = require('express');
 const { default: mongoose } = require('mongoose');
-const {user,TrainingCenter,Course, order} =  require('../modules/products');
+const {user,TrainingCenter,Course, order, TakenExams} =  require('../modules/products');
 const { PraperImage } = require('../Utils/utils');
+
 
 const getCourse = async (req ,res)=>{
      //get product id from http header
@@ -94,7 +95,7 @@ const getAllProducts = async (req , res)=>{
     resulte = await resulte
     
     for (let i = 0; i < resulte.length;i++){
-      PraperImage(resulte[i].photos,req.headers.host)       
+      PraperImage(resulte[i].photos,req.headers.host)
     }
 
     if(resulte){
@@ -257,9 +258,50 @@ const deleteProduct = async (req , res)=>{
       res.sendStatus(404)
   }
 }
+const editCourse = async (req,res)=>{
+  try{
+      const id = req.params.id
+      const CourseNewData = req.body
+      const newcoursedata = await Course.updateOne({_id:id} , {$set:CourseNewData})
+      return res.json(newcoursedata)
+  }catch(err){
+      console.log(err)
+      return res.json({"message":err.message})
+  }
+}
+const getCoursesByCenterId = async (req,res)=>{
+    try{
+          const id = req.params.id
+          const courses = await Course.find({TrainingCenterId:id})
+          for (let i = 0; i < courses.length;i++){
+              PraperImage(courses[i].photos,req.headers.host)
+          }
+          res.json(courses)
+    }catch(err){
+          res.status(405).json({message:err.message})
+    }
+}
+const myCourses = async (req,res)=>{
+        try{
+            const id = req.userId;
+            const TakenCourses = await order.find({userId:id})
+            console.log("Taken courses " , JSON.stringify(TakenCourses))
+            if (TakenCourses.length){
+                const CourseIds = TakenCourses.map(item=>{return item.courseID})
+                const Courses = await Course.find({_id:{$in:CourseIds}})
+                res.json(Courses)
+            }else{
+              res.json([])
+            }
+        }catch(err){
+          console.log(err)
+            res.status(400).json({"message" :err.message})
+        }
+      //const Course = Course.find({_id:{$in:Courses}})  
+}
 //exports the functions
-module.exports={getCourse , 
+module.exports={getCourse ,myCourses, 
                 getAllProducts,addCourse, 
                 editeProduct,deleteProduct,
-                upload_coures_pictures,
-                getUserProducts}
+                upload_coures_pictures,getCoursesByCenterId,
+                getUserProducts,editCourse}

@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { PraperImage } = require('../Utils/utils');
 const Schema = mongoose.Schema;
 
 const CoursesSchema = new Schema({                           
@@ -19,29 +20,19 @@ const CoursesSchema = new Schema({
       carsID          :   {type:mongoose.Schema.ObjectId,required:true},
       numberOfSessions:   {type:String,require:true}
 })
-
 const TrainingCentersSchema = new Schema({                      
     name:         {type:String,required:true},
     photos:       {type:Array, required:false},
     description:  {type:String, required:true},
     longitude:    {type:String, required:false},
-    latitude:     {type :String,required:false},
-    location:     {type :String,required:false},
-    rate :        {type:Number, required:false,default  : 0},
-    active:       {type:Boolean,required:false,default:true},
-    details:      {type:String,required:false},
-    location: { 
-        "street_no": {type:String}, 
-        "street1":   {type:String}, 
-        "street2":   {type:String}, 
-        "city":      {type:String},  
-        "zip":       {type:String}, 
-        "country":   {type:String}, 
-    }
+    latitude:     {type:String,required:false},
+    location:     {type:String,required:false},
+    rate :        {type:Number, required:false,default:0},
+    active:       {type:Boolean,required:false,default:true}
 })
 
 
-const CarsSchema = new Schema({                           
+const CarsSchema = new Schema({        
     name:             {type:String,required:true},
     photos:           {type:Array, required:false},
     model:            {type:String, required:false},
@@ -57,6 +48,7 @@ const TrainersSchema = new Schema({
     rate:             {type:Number,required:true},
     trainingCentersId:{type:String,required:true},
 })
+
 
 
 const userGroupSchema = new Schema({
@@ -77,6 +69,10 @@ const usersSchema = new Schema({
         rate:             {type:Number,required:false},
         trainingCentersId:{type:String,required:false},
         birthdate        :{type:Date  ,required:false},
+        driving_license_front:{type:String,required:false},
+        driving_license_back:{type:String,required:false},
+        citizenship_id_front:{type:String,required:false},
+        citizenship_id_back:{type:String,required:false},
         location:{
             "street_no": {type:String}, 
             "street1":   {type:String}, 
@@ -101,7 +97,38 @@ const orderSchema = new Schema({
     state                    : {type: String , required:true},                
 });
 
+const QuastionsBankSchema = new Schema({
+    name        : {type: String , required:true},
+    qustions    : {type: Array  , required:false},
+    courseID    : {type: String , required:true},
+    level       : {type: String , required:false},                
+});
+const QuastionSchema = new Schema({
+    quastion :{type: String , required:true},
+    answers  :{type:Array,required:true},
+    courseID :{type:String , required:false},
+    correct_answer:{type:String ,required:true},
+    quastionBankId:{type:String ,required:true}
+})
+const ExamsSchema = new Schema({
+    name :{type: String , required:true},
+    level  :{type:String,required:true},
+    courseID :{type:String , required:true},
+    quastionBankId:{type:String ,required:true},
+    quastions:{type: Array  , required:true},
+})
+const TakenExamsSchema = new Schema({
+    examId  :{type:String,require:true},
+    userId  :{type:String,require:true},
+    courseID:{type:String,require:true},
+    mark    :{type:Number,require:true},
+    answers:{type:Array,require:false}
+})
 
+TrainingCentersSchema.virtual('fullPathImages').get(function(){
+    console.log("_____________________Compaine]omain______________________")
+    return PraperImage(this.photos,"Ahmad")
+})
 //products model
 const Course = mongoose.model('Courses',CoursesSchema);
 //user model
@@ -118,5 +145,27 @@ const userGroup = mongoose.model('UserGroup',userGroupSchema);
 const Traniners = mongoose.model('Traniners',TrainersSchema);
 //Tranining center
 const TrainingCenter = mongoose.model('TrainingCenters',TrainingCentersSchema);
+
+const QuastionBank = mongoose.model('QuastionsBank',QuastionsBankSchema);
+
+const Quastion = mongoose.model('Quastion',QuastionSchema);
+
+const Exams = mongoose.model('Exams',ExamsSchema);
+
+const TakenExams = mongoose.model('TakenExams',TakenExamsSchema);
+
+
+
+
+/////////////////////////////Middelwares///////////////////////////////////
+TrainersSchema.pre('deleteOne',function (doc,next){
+    console.log("______________________delete______________________")
+    next()
+})
+
+
+
+
+
 //exports the models
-module.exports = {Course,user,Cars,order,TrainingCenter,Feedback,userGroup,Traniners}
+module.exports = {Course,user,Cars,order,TrainingCenter,Feedback,userGroup,Traniners,QuastionBank,Quastion,Exams,TakenExams}

@@ -13,6 +13,7 @@ const TrainingCenter = require('./route/TrainingCenters')
 const CarsRouter = require('./route/Car')
 const ConstructorsRouter = require('./route/Constructor')
 const ImageRouter=require('./route/Image')
+const QuastionsRouter=require('./route/Quastion')
 //import file for connect to the database 
 const {conntect} = require('./modules/database')
 //import libraries required or server operations جلب المكتبات الخاصة في تشغيل السيرفر 
@@ -39,7 +40,8 @@ class Server{
           this.app.use(uploadFile({createParentPath : true}));
           this.app.use('/images', express.static('images'))
           //Set Routers
-        //   this.app.use('/images/*',express.json(), ImageRouter)
+          //this.app.use('/images/*',express.json(), ImageRouter)
+          this.app.use('/api/v1/quastions',express.json(), QuastionsRouter)
           this.app.use('/api/v1/courses',express.json(),  Products)
           this.app.use('/api/v1/users' ,express.json(), Users)
           this.app.use('/api/v1/userfunctions',express.json() , userfunctions)
