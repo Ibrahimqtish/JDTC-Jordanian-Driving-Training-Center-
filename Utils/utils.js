@@ -29,4 +29,16 @@ function PraperSingleImage(url,host){
     }
     return url
 }
-module.exports={PraperSingleImage,PraperImage}
+function formatiFloatTime(time){
+  let period  = "AM"
+  let Houres = Math.floor(time) 
+  let Minuts = ((time - Math.floor(time)) * 60)
+  Minuts=Minuts.toFixed(0)
+  if (Minuts.toString().length < 2)Minuts = "0" + Minuts
+  if (time > 12){
+     Houres = Houres - 12
+     period="PM"
+  } 
+  return Houres+":"+Minuts +" "+period
+}
+module.exports={PraperSingleImage,PraperImage,formatiFloatTime}

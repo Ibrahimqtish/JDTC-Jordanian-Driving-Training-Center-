@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { PraperImage } = require('../Utils/utils');
+const { PraperImage, formatiFloatTime } = require('../Utils/utils');
 const Schema = mongoose.Schema;
 
 const CoursesSchema = new Schema({                           
@@ -20,10 +20,14 @@ const CoursesSchema = new Schema({
       carsID          :   {type:mongoose.Schema.ObjectId,required:true},
       numberOfSessions:   {type:String,require:true}
 })
-const TrainingCentersSchema = new Schema({                      
+const TrainingCentersSchema = new Schema({
     name:         {type:String,required:true},
     photos:       {type:Array, required:false},
     description:  {type:String, required:true},
+    open_time:    {type:Number,required:true},
+    close_time:   {type:Number,required:true},
+    contact_number:{type:String,required:false},
+    website       :{type:String,required:false},
     longitude:    {type:String, required:false},
     latitude:     {type:String,required:false},
     location:     {type:String,required:false},
@@ -129,6 +133,14 @@ TrainingCentersSchema.virtual('fullPathImages').get(function(){
     console.log("_____________________Compaine]omain______________________")
     return PraperImage(this.photos,"Ahmad")
 })
+//TrainingCentersSchema.pre('findOne', function() {
+//       console.log("_____________________Component______________________")
+//       return this.open_time=formatiFloatTime(this.open_time)
+// })
+//TrainingCentersSchema.pre('find', function() {
+//     console.log("_____________________Component______________________")
+//     return this.open_time=0
+// })
 //products model
 const Course = mongoose.model('Courses',CoursesSchema);
 //user model
