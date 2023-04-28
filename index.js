@@ -35,7 +35,7 @@ class Server{
           //create new object from express        
           this.app = express()
           //Add MiddelWares
-          this.app.use(cors());
+          this.app.use('*',cors());
           this.app.use(cookieParser());
           this.app.use(uploadFile({createParentPath : true}));
           this.app.use('/images', express.static('images'))

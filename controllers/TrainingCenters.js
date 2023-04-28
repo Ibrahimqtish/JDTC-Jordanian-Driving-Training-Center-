@@ -1,6 +1,8 @@
 const { response } = require('express');
 const {TrainingCenter} =  require('../modules/products');
 const { PraperImage } = require('../Utils/utils');
+const { Mongoose } = require('mongoose');
+const { default: mongoose } = require('mongoose');
 
 //get all products and send it to the user
 const getAllTrainingCenters = async (req , res)=>{
@@ -34,7 +36,6 @@ const getAllTrainingCenters = async (req , res)=>{
     for (let i = 0 ; i < resulte.length;i++){
             console.log(resulte[i].photos)
             PraperImage(resulte[i].photos,req.headers.host) 
-            console.log("fullPathImages " , resulte[i].fullPathImages)
     }
     if(resulte){
       //send response back
@@ -106,11 +107,11 @@ const upload_product_pictures = async(req , res)=>{
 }
 async function getTraningCenterById(req,res){
   try{
-      const id = req.params.id
-      console.log("id " ,id)
-      const result = await TrainingCenter.findOne({_id:id})
+      const Centerid = req.params.id
+      console.log("getTraningCenterById " ,Centerid)
+      const result = await TrainingCenter.findOne({_id:Centerid})
+      if (result)
       PraperImage(result.photos,req.headers.host)
-      console.debug("getTraningCenterById " + id )
       res.json(result)
   }catch(err){
     console.log(err)
@@ -130,5 +131,38 @@ const editTrainingCenter = async (req ,res)=>{
   }catch(err){
     res.json({"message":err.message})
   }
+} 
+const deleteCenter = async (req ,res)=>{
+  try{
+    const id = req.params.id
+    //check basic params
+    if (id){
+      console.log("deleting data")
+        //save and return response
+        const data =  await TrainingCenter.findOne({_id:id})
+        const deleteData=await TrainingCenter.deleteOne({_id:id})
+        //return response
+        let resulte = await TrainingCenter.find()
+        return res.json(resulte)
+    }
+  }catch(err){
+    res.json({"message":err.message})
+  }
 }
-module.exports={addTrainingCenter,upload_product_pictures,getAllTrainingCenters,getTraningCenterById,editTrainingCenter}
+const getMusicList = async (req ,res)=>{
+    try{
+        console.log("New Requiest")
+        const List = [
+          {"name":"Tamier hosne","image":"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg","sound":"https://arab-zik.com/stream/44070/8DVuj6iXOUgcpiOunMH6FFqf1RRBwAgZs4vEngpb"},
+          {"name":"yasen jamal","image":"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg","sound":"https://cdn.pixabay.com/audio/2023/04/08/audio_5fd3e66ac3.mp3"},
+          {"name":"ahamad jamal","image":"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg","sound":"https://cdn.pixabay.com/audio/2022/08/20/audio_53e3aedf91.mp3"},
+          {"name":"khali ahmad","image":"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg","sound":"https://cdn.pixabay.com/audio/2022/08/20/audio_53e3aedf91.mp3"},
+          {"name":"Tamier hosne","image":"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg","sound":"https://cdn.pixabay.com/audio/2022/08/20/audio_53e3aedf91.mp3"},
+          {"name":"Tamier hosne","image":"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg","sound":"https://cdn.pixabay.com/audio/2022/08/20/audio_53e3aedf91.mp3"}
+        ]
+        res.json(List)
+    }catch(err){
+        res.json({"message":err.message})
+    }
+}
+module.exports={addTrainingCenter,upload_product_pictures,getAllTrainingCenters,getTraningCenterById,editTrainingCenter,deleteCenter,getMusicList}

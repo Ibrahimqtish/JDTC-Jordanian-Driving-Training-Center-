@@ -4,7 +4,7 @@ const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client("591903598674-746pln3so790djugv2no0n6024gnfg6h.apps.googleusercontent.com");
 const public_keys = require("../google-puclic-keys");
 const fs = require("fs");
-const { PraperImage, PraperSingleImage } = require("../Utils/utils");
+const {PraperSingleImage } = require("../Utils/utils");
 
 
 const  editUserInformation = async (req, res) => {
@@ -459,10 +459,21 @@ const editUserProfile = async (req,res)=>{
       res.json({"message":err.message})
   }
 }
+const deleteuser = async (req,res)=>{
+  try{
+      const userId = req.params.id
+      console.log("userId " , userId)
+      await user.deleteOne({_id:userId})
+      const newData = await user.find()
+      res.json(newData)
+  }catch(err){
+    res.json({"message":err.message})
+  }
+}
 module.exports={addNewUser,
                 add_user_profile_pictures,
                 getUserGroups,removeUser,
-                login, g_auth0,
+                login, g_auth0,deleteuser,
                 getuserprofile,addUser,
                 upload_profile_picture,
                 editUserInformation,getAllUsers,

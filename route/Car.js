@@ -15,8 +15,11 @@ class  CarRouter{
             this.Router.post('/add-car',       CarsControllers.addCar)
             this.Router.post('/upload-images', CarsControllers.upload_product_pictures)
             this.Router.get("/get-all-cars",CarsControllers.getAllTrainingCars)
+            this.Router.delete('/delete/:id',authorization,CarsControllers.deleteCare)
+            this.Router.get('/get-car-by-id/:id',CarsControllers.getCarById)
+            this.Router.put('/EditCar/:id',CarsControllers.EditCar)
        }
-} 
+}
 
-const Router = new CarRouter() 
+const Router = new CarRouter()
 module.exports  = Router.Router

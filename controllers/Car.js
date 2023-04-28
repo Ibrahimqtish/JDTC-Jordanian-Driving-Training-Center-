@@ -101,5 +101,43 @@ const upload_product_pictures = async(req , res)=>{
     }
   
 }
+const deleteCare = async (req,res)=>{
+    try{
+        const carId=req.params.id
+        if (carId){
+          await Cars.deleteOne({_id:carId})
+          const carsData=await Cars.find()
+          res.json(carsData)
+        }
+    }catch(err){
+      console.log(err.message)
+      res.json({"message":err.message})
+    }
+}
+const getCarById = async (req,res)=>{
+  try{
+     const CarId = req.params.id
+     if (CarId){
+        const car = await Cars.findOne({_id:CarId})
+        res.json(car)
+     }else{
+        res.status.json({"message":"please provide car id"})
+     }
+  }catch(err){
+      console.log({"message":err.message}) 
+      res.status(402).json({"message":err.message})
+  }
+}
+const EditCar = async (req,res)=>{
+    try{
+      const RequestBody = req.body
+      const id = req.params.id
+      const new_car = await Cars.updateOne({_id:id},{$set:RequestBody})
+      if (new_car){res.json(new_car)}
+    }catch(err){
+      console.log({"message":err.message}) 
+      res.status(402).json({"message":err.message}) 
+    }
+}
 
-module.exports = {addCar,getCar,upload_product_pictures,getAllTrainingCars}
+module.exports = {addCar,getCar,upload_product_pictures,getAllTrainingCars,deleteCare,getCarById,EditCar}

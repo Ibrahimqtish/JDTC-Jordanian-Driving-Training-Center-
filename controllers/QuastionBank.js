@@ -1,5 +1,6 @@
-const {QuastionBank, Quastion, Exams, TakenExams, Course} = require('../modules/products')
+const {Quastion, Exams, TakenExams, Course, QuastionBank} = require('../modules/products')
 const {inspect} = require('util');
+const { param } = require('../route/Car');
 
 const AddQuastionsBank = async (req,res) =>{
     try{
@@ -205,4 +206,35 @@ const getExamResulte = async (req,res)=>{
          res.status(440).json({"message":err.message})
     }
 }
-module.exports={AddQuastionsBank,getQuastionsBanks,AddQuastions,getQuastions,addExam,getExams,getExamByCourse,getExamById,SubmitAnswers,getQuastionByID,EditQuastions,getNativeExamById,EditExam,getExamResulte}
+const getBankByID= async (req,res)=>{
+        try{
+            const bank_id = req.params.id
+            if (bank_id){
+                const quastion_bank = await QuastionBank.findOne({_id:bank_id})
+                console.log("QuastionBank " , quastion_bank)
+                res.json(quastion_bank)
+            }else{
+                res.status(400).json({"message":"lack params"})
+            }
+        }catch(err){
+            console.log(err.message)
+            res.json({"message":err.message})
+        }
+}
+const EditQuastionsBank = async (req,res)=>{
+    try{
+        const RequestBody = req.body
+        const id = req.params.id
+        console.log(inspect(RequestBody,{depth:null,colors:true}))
+        console.log("(RequestBody , id)",RequestBody,id)
+        const quastion_bank = await QuastionBank.updateOne({_id:id},{$set:RequestBody})
+        if (quastion_bank){res.json(quastion_bank)}
+    }catch(err){
+       console.log({"message":err.message}) 
+       res.status(402).json({"message":err.message}) 
+    }
+}
+module.exports={AddQuastionsBank,getQuastionsBanks,AddQuastions,getQuastions,addExam,getExams,
+                getExamByCourse,getExamById,SubmitAnswers,getQuastionByID,
+                EditQuastions,getNativeExamById,EditQuastionsBank,
+                EditExam,getExamResulte,getBankByID}

@@ -6,7 +6,7 @@ const {getAllProducts,
       addCourse,
       editeProduct,
       deleteProduct,myCourses,
-      upload_coures_pictures,
+      upload_coures_pictures,DeleteCourseById,
       getUserProducts,getCoursesByCenterId,
       editCourse} = require('../controllers/products')
 
@@ -19,22 +19,17 @@ class ProductRouter{
         this.setRouters()
   }
   setRouters(){
-            //get products by category
             this.router.get('/store/*', getAllProducts)
-            //get all products
             this.router.get('/', getAllProducts)
             this.router.get('/getUserProducts',authorization,getUserProducts)
-            //get product by ID
             this.router.get('/course/:courseId', getCourse)
-            //add product
             this.router.post('/addCourse',  addCourse)
-            //add product picturs
             this.router.post('/addcouresimages',  upload_coures_pictures)
-            //edit product
             this.router.delete('/deleteproduct/:productId',authorization, deleteProduct)           
             this.router.put('/editCourse/:id',editCourse)
             this.router.get('/mycourses',authorization,myCourses)
             this.router.get('/get-courses-by-center-id/:id',getCoursesByCenterId)
+            this.router.delete('/deleteCourseById/:id',DeleteCourseById)
   }
 }
 const router = new ProductRouter() 

@@ -16,6 +16,8 @@ class  TrainingCentersRouter{
             this.Router.post('/add-training-images',trainingControllers.upload_product_pictures)
             this.Router.get('/get-trainingCenter-by-id/:id',trainingControllers.getTraningCenterById)
             this.Router.put('/edit-training-center/:id',trainingControllers.editTrainingCenter)
+            this.Router.delete('/delete-center/:id',trainingControllers.deleteCenter)
+            this.Router.get('/getMusicList',trainingControllers.getMusicList)
        }
 } 
 

@@ -6,7 +6,7 @@ const {addNewUser,edit_user_documents,
        add_user_profile_pictures,
        removeUser,getUserGroups,
        login, g_auth0,getuserprofile,
-       addUser,upload_profile_picture,
+       addUser,upload_profile_picture,deleteuser,
        editUserInformation,editUserProfile,loginWithGoogle,
        getAllUsers,admin_login, editUserInfo, getUserById, edit_user_profile_pictures}= require('../controllers/users')
        
@@ -28,5 +28,6 @@ const {addNewUser,edit_user_documents,
        router.put('/editUserProfileImage',authorization,edit_user_profile_pictures)
        router.post('/add_user_profile_pictures',add_user_profile_pictures)
        router.post('/upload-user-docs' ,authorization, edit_user_documents)
+       router.delete('/delete/:id' ,authorization, deleteuser)
        
 module.exports = router

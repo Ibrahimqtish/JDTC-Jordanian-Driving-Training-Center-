@@ -5,44 +5,27 @@ const { PraperImage } = require('../Utils/utils');
 
 
 const getCourse = async (req ,res)=>{
-     //get product id from http header
-    const courseId = req.params.courseId;
-    //find product in mangoDB database and then send response
-    //send err if product is not exsists         
-
-    await Course.find({_id:courseId}).then(async (response)=>{
-        //send response back to the server
-        if(response[0]){
-          //send response back
-          let CourseValue = response[0].toObject()
-          
-          const CenterValue = await TrainingCenter.find({_id:response[0].TrainingCenterId})
-          let CenterObjectValue = CenterValue[0].toObject()
-          console.table(CenterObjectValue)
-          
-          PraperImage(CourseValue.photos,req.headers.host)
-          if (CenterValue.length){
-            PraperImage(CenterObjectValue.photos,req.headers.host)
-            CourseValue.Center= CenterObjectValue
-            console.log(CenterObjectValue)
-          }
-          
-          //check orders
-          const Orders = await order.find({courseID:CourseValue._id})
-          console.log(Orders)
-          if (Orders.length)
-          CourseValue.status = "reserved"
-          return res.json(CourseValue)
+  try{
+        //get product id from http header
+        const courseId = req.params.courseId;
+        //find product in mangoDB database and then send response
+        let courseValue;
+        if (req.headers.mapdata == 'true'){
+            courseValue =  await Course.findOne({_id:courseId}).populate('TrainingCenterId')
+            PraperImage(courseValue.TrainingCenterId.photos,req.headers.host)
         }
-        else {
-          //send 403 back if response is not defiend
-          return res.status(403).json({status:"no resulte"})
-        }  
-    }).catch((err)=>{
-      //send err back
-      console.log(err)
-      return res.status(403).send(err.message)
-    })
+        else{
+            courseValue =  await Course.findOne({_id:courseId})
+        }        // prepare orders
+        const Orders = await order.find({courseID:courseValue._id})
+        if (Orders.length)courseValue.status = "reserved"
+        //prepare images
+        PraperImage(courseValue.photos,req.headers.host)
+        return res.json(courseValue)
+  }catch(err){
+    console.error(err)
+    res.status(500).json({"message":err.message})
+  }
 }
 
 const getUserProducts = async(req , res)=>{
@@ -299,9 +282,24 @@ const myCourses = async (req,res)=>{
         }
       //const Course = Course.find({_id:{$in:Courses}})  
 }
-//exports the functions
+
+const DeleteCourseById = async (req,res)=>{
+  try{
+      const id = req.params.id
+      if (id){
+        const deletedCourse=await Course.deleteOne({_id:id})
+        const NewData = await Course.find()
+        return res.json(NewData)
+      }
+  }catch(err){
+      console.log(ere)
+      res.json({"message":err.message})
+  }
+}
+
+//Exports the functions
 module.exports={getCourse ,myCourses, 
                 getAllProducts,addCourse, 
                 editeProduct,deleteProduct,
                 upload_coures_pictures,getCoursesByCenterId,
-                getUserProducts,editCourse}
+                getUserProducts,editCourse,DeleteCourseById}

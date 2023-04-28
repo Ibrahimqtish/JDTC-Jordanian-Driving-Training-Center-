@@ -25,6 +25,8 @@ class  QustionBank{
             this.Router.put('/edit-quastions/:id',QuastionBank.EditQuastions)
             this.Router.put('/edit-exam/:id',QuastionBank.EditExam)
             this.Router.get('/getExamResulte/:examId',authorization,QuastionBank.getExamResulte)
+            this.Router.get('/getBankById/:id',QuastionBank.getBankByID)
+            this.Router.put('/edit-quastion-bank/:id',QuastionBank.EditQuastionsBank)
        }
 }
 
