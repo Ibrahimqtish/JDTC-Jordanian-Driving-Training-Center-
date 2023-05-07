@@ -2,22 +2,22 @@ const mongoose = require('mongoose');
 const { PraperImage, formatiFloatTime } = require('../Utils/utils');
 const Schema = mongoose.Schema;
 
-const CoursesSchema = new Schema({                           
+const CoursesSchema = new Schema({
       title           :   {type:String,required:true},
       photos          :   {type:Array, required:false},
       discrption      :   {type:String, required:true},
       coste           :   {type:Number, required:false,delfult : 1},
       currency        :   {type:String,enum:['jo',"usd"]},
       rate            :   {type:Number, required:false,default  : 0},
-      constructorId   :   {type:mongoose.Schema.ObjectId,required:true},
+      constructorId   :   {type:mongoose.Schema.ObjectId,required:true,ref:'user'},
       active          :   {type:Boolean,required:false,default:true},
       TrainingCenterId:   {type:mongoose.Schema.ObjectId,ref:'TrainingCenters',required:true},
       Level           :   {type:String,require:true},
       start_time      :   {type:Number,required:false},
       end_time        :   {type:Number,required:false},
       duration        :   {Type:Number,required:false},
-      start_date      :   {type:Date,required:false},
-      carsID          :   {type:mongoose.Schema.ObjectId,required:true},
+      start_date      :   {type:Date,required:true},
+      carsID          :   {type:mongoose.Schema.ObjectId,ref:"Cars",required:true},
       numberOfSessions:   {type:String,require:true}
 })
 const TrainingCentersSchema = new Schema({
@@ -89,8 +89,8 @@ const FeedbackSchema = new Schema({
 const orderSchema = new Schema({
        order_data               : {type: Array  , required:false},
        stipe_checkout_session_id: {type: String , required:false},
-       courseID                 : {type: String , required:true},
-       userId                   : {type: String , required:true},
+       courseID                 : {type: mongoose.Schema.ObjectId,ref:'Courses', required:true},
+       userId                   : {type: mongoose.Schema.ObjectId, required:true},
        state                    : {type: String , required:true},                
 });
 

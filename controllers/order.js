@@ -1,14 +1,41 @@
 const stripe = require('stripe')(process.env.STRIPE_SEC_KEY)
 const {Course,order} = require('../modules/products')
 
-const pursh = async (req , res)=>{
+const check_date= (proposed_course,taken_courses)=>{
+      const proposed_course_start_date = Date.parse(proposed_course.start_date)
+      const proposed_course_end_date   = Date.parse(proposed_course.start_date)+(proposed_course.number_of_sessions * (24 * 60 * 60 * 1000))        
+      //Loop all over courses
+      for (let i = 0;i < taken_courses.length;i++){
+
+          console.log("taken_courses[i].courseID.start_time ",taken_courses[i].courseID.start_time)
+          console.log("proposed_course.start_time " ,proposed_course.start_time)
+
+          console.log("taken_courses[i].end_time ", taken_courses[i].courseID.end_time)
+          console.log("proposed_course.end_time " , proposed_course.end_time)
+
+          const taken_end_date=(taken_courses[i].courseID.numberOfSessions * (24 * 60 * 60 * 1000)) + Date.parse(taken_courses[i].courseID.start_date)
+          const taken_start_date=Date.parse(taken_courses[i].courseID.start_date)
+
+          if ((taken_start_date >= proposed_course_start_date && proposed_course_start_date < taken_end_date) ||
+              (taken_start_date >= proposed_course_end_date   && proposed_course_end_date   < taken_end_date)) {
+               if ((taken_courses[i].courseID.start_time <= proposed_course.start_time && proposed_course.start_time < taken_courses[i].courseID.end_time) || 
+               (taken_courses[i].courseID.start_time <= proposed_course.end_time && proposed_course.end_time < taken_courses[i].courseID.end_time)){
+                  return true
+               }else{
+                  return false
+               }
+          }
+
+      }
+}
+
+const pursh = async (req,res)=>{
    try{
       const userID = req.userId
-      //get orders from from requies body
+      //get orders from requies body
       const RequestBody = req.body
       //fetch products data from data base
       console.log(req.body)
-      
       const courseID = RequestBody.courseID
       //find prducts in data base with IDs
       console.log("courseID " , courseID)
@@ -19,10 +46,16 @@ const pursh = async (req , res)=>{
       }
       let PrevOrders= await order.find({'userId':userID,'courseID':courseID})
       //
-      if(PrevOrders.length){
-         return res.status(400).json({"Message":"you already paid for this course"})
+      let prev_orders=await order.find({'userId':userID}).populate('courseID')
+      console.log("prev_orders.courseID " , prev_orders.courseID)
+
+      if (check_date(db_courses[0],prev_orders)){
+         return res.status(200).json({"Message":"you have time conflict"})  
       }
-      //prepare stripe order details object
+      if(PrevOrders.length){
+         return res.status(200).json({"Message":"you already paid for this course"})
+      }
+      //Prepare stripe order details object
       let stripe_orders = db_courses.map((item,index) =>{
             return{price_data:{
                                  currency:'usd',
@@ -46,7 +79,7 @@ const pursh = async (req , res)=>{
             success_url: 'http://localhost:3000/',
             cancel_url: 'http://localhost:3000/'
          }).then((resulte)=>{
-            //return the response to the user   
+            //return the response to the user
             return res.json(resulte)
          }).catch(err=>console.log(err))
          

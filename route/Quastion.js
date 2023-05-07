@@ -21,7 +21,7 @@ class  QustionBank{
             this.Router.get('/get-exams'         ,QuastionBank.getExams)
             this.Router.get('/get-native-exams-by-id/:examId',QuastionBank.getNativeExamById)
             this.Router.get('/get-exams-by-id/:examId' ,QuastionBank.getExamById)
-            this.Router.get('/get-exam-by-course/:courseId',QuastionBank.getExamByCourse)
+            this.Router.get('/get-exam-by-course/:courseId',authorization,QuastionBank.getExamByCourse)
             this.Router.put('/edit-quastions/:id',QuastionBank.EditQuastions)
             this.Router.put('/edit-exam/:id',QuastionBank.EditExam)
             this.Router.get('/getExamResulte/:examId',authorization,QuastionBank.getExamResulte)

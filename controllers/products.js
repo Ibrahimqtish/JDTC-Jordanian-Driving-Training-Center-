@@ -1,7 +1,7 @@
 const { response } = require('express');
 const { default: mongoose } = require('mongoose');
-const {user,TrainingCenter,Course, order, TakenExams} =  require('../modules/products');
-const { PraperImage } = require('../Utils/utils');
+const {Course, order} =  require('../modules/products');
+const { PraperImage, PraperSingleImage } = require('../Utils/utils');
 
 
 const getCourse = async (req ,res)=>{
@@ -9,16 +9,20 @@ const getCourse = async (req ,res)=>{
         //get product id from http header
         const courseId = req.params.courseId;
         //find product in mangoDB database and then send response
-        let courseValue;
+        let courseValue = {};
         if (req.headers.mapdata == 'true'){
-            courseValue =  await Course.findOne({_id:courseId}).populate('TrainingCenterId')
+            courseValue =  await Course.findOne({_id:courseId}).populate('TrainingCenterId').populate('constructorId')
             PraperImage(courseValue.TrainingCenterId.photos,req.headers.host)
+            PraperSingleImage(courseValue.constructorId.profile_pic,req.headers.host)
         }
         else{
             courseValue =  await Course.findOne({_id:courseId})
-        }        // prepare orders
+        }
+        courseValue=courseValue.toObject()
+        //Prepare orders
         const Orders = await order.find({courseID:courseValue._id})
         if (Orders.length)courseValue.status = "reserved"
+        console.log("courseValue.status ",courseValue)
         //prepare images
         PraperImage(courseValue.photos,req.headers.host)
         return res.json(courseValue)
@@ -26,7 +30,7 @@ const getCourse = async (req ,res)=>{
     console.error(err)
     res.status(500).json({"message":err.message})
   }
-}
+} 
 
 const getUserProducts = async(req , res)=>{
   const useId = req.userId;
@@ -43,6 +47,7 @@ const getAllProducts = async (req , res)=>{
     const queryParam = {}
     //quiry parames
     const {priceLessThan,pricegreaterthan,skip,limit,sort,name,rateFillter,location} = req.query;
+    const {fill} = req.headers
     //category params
     if(location){
       let countries = location.split(',')
@@ -62,12 +67,11 @@ const getAllProducts = async (req , res)=>{
     else if(pricegreaterthan)queryParam.coste = {$gt:Number(pricegreaterthan)};
     if(rateFillter && rateFillter != -1)
     queryParam.$or = [{rate:{$gt:Number(rateFillter)}},{rate:{$eq:Number(rateFillter)}}] 
-    //filter the name
+    //Filter the name
     if (name) queryParam.title = {$regex :`^${name}`}
-
-    console.log(JSON.stringify(queryParam))
-
-    let resulte =  Course.find(queryParam)
+    console.log(JSON.stringify(queryParam))    
+    let resulte = Course.find(queryParam)
+    // courseValue =  await Course.findOne({_id:courseId})
     //SKIP AND SET LIMIT FOR THE NUMBER OF THE
     if(skip) resulte = resulte.skip(skip)
     //limit the number of returend elements
@@ -75,8 +79,15 @@ const getAllProducts = async (req , res)=>{
     //sort resulte if sort not null
     if(sort)  resulte = resulte.sort(sort)
     //check name
-    resulte = await resulte
-    
+
+    if (fill){
+        resulte = await resulte.populate('TrainingCenterId')
+        for (let i of resulte){
+          PraperImage(i.TrainingCenterId.photos,req.headers.host)
+        }
+    }else{
+        resulte = await resulte
+    }
     for (let i = 0; i < resulte.length;i++){
       PraperImage(resulte[i].photos,req.headers.host)
     }
@@ -142,7 +153,7 @@ const upload_coures_pictures = async(req , res)=>{
   }
 }
 
-//add product to the database
+//Add product to the database
 const addCourse = async (req , res)=>{
       try{
           //get user information from the DATA_BASE (get product creater Id)

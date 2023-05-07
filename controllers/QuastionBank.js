@@ -60,7 +60,6 @@ const EditExam = async (req,res) =>{
     try{
         const RequestBody = req.body
         const id = req.params.id
-        console.log(inspect(RequestBody,{depth:null,colors:true}))
         console.log("(RequestBody , id)",RequestBody,id)
         const quastions = await Exams.updateOne({_id:id},{$set:RequestBody})
         if (quastions){res.json(quastions)}
@@ -112,17 +111,39 @@ const getExams = async (req,res)=>{
     }
 }
 
+const check_containes = (list,value)=>{
+       for (let i = 0;i < list.length;i++){
+            if (value == list[i]){
+                return true
+            }       
+       }
+       return false
+}
+
 const getExamByCourse = async (req,res)=>{
    try{
         console.log("geting exam by id " , req.params.courseId) 
         const ExamRecords = await Exams.find({'courseID':req.params.courseId})
-        console.log(ExamRecords)
-        const quations = await Quastion.find({_id:{$in:ExamRecords[0].quastions}})
-        
-        const ExamRecordsObject = ExamRecords[0].toObject()  
-        const resulte = {"exam_Id": ExamRecordsObject._id , "quations":quations } 
+        console.log("All exams ",ExamRecords)
 
-        return res.json(resulte)
+        let TakenExamsIds=[]
+        const TakenExamsList=await TakenExams.find({userId:req.userId,courseID:req.params.courseId})
+        TakenExamsIds=TakenExamsList.map(item=>{return item.examId})
+        console.log("TakenExamsIds " , TakenExamsIds)
+        if (ExamRecords.length){
+            //quations = await Quastion.find({_id:{$in:ExamRecords[0].quastions}})
+            for (let i = 0;i < ExamRecords.length;i++){
+                
+                if (!(check_containes(TakenExamsIds,ExamRecords[i]._id.toString()))){
+                    const resulte = {"exam_Id":ExamRecords[i]._id}
+                    return res.json(resulte)
+                }
+            }
+            return res.status(404).json({"message":"There is no exam for you"})
+        }else{
+            return res.status(404).json({"message":"There is now exam"})
+        } 
+
    }catch(err){
         console.log(err)
         res.status(440).json({"message":err.message})

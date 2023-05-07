@@ -2,7 +2,7 @@
 //ملف يخزن متغيارت خاصة في بيئة التشغيل
 require('dotenv').config()
 const path = require('path')
-
+const SMTPServer = require("smtp-server").SMTPServer;
 //import routers لجلب الموجهات
 const Products = require('./route/products')
 const Users = require('./route/users')
@@ -32,7 +32,7 @@ const express = require('express')
 class Server{
     //called once the object created
     constructor(){
-          //create new object from express        
+          //create new object from express
           this.app = express()
           //Add MiddelWares
           this.app.use('*',cors());
@@ -62,11 +62,42 @@ class Server{
                   console.log(`Server has been Started | Port ${port}`)
               }) 
               console.log('succsess')
-          }).catch( (err)=>{
+          }).catch((err)=>{
               console.log(err)
           })
     }
 }
-//INIT Server
+// INIT Server
 const server = new Server()
 server.StartServer(5000)
+
+
+// const form_data = new FormData()
+// form_data.append('email',"sdkof@test.com")
+// form_data.append('phone_number','12312')
+// form_data.append('name',"wajdi")
+
+// fetch('https://api.mooneh.net/vendor/v1.0/edit_profile?vendor_id=1',{method:'PUT' , body:form_data,
+// headers:{'Authorization':'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IktGQyIsImV4cCI6MTY4MzAyNzI4Nn0.fRr17e5mNLKNJiAVgXiNsS29vIlplXjm17cJF1awfIpBTNXR2bx---y90ekyz-va9Zn2hLPso6ZzxAIIfue1vHuXUwJcyLn0ocdcWl0Gjg7fVE9fBLI_gCKH3MaE4IAYQtkGaFadSKJzZXmawarN54j83JIOhavl0xoWZR4UbW8',
+//          'channel':'ios'
+// }}).then(res=>{
+//     if (res.status == 200){
+//             console.log("accepted")
+//             return res.json()
+//     }else{
+//         console.log("rejected")
+//         console.log(res)
+//         return res.json()
+//     }
+// }).then(res=>{
+//     console.log(res)
+// })
+
+// const number_of_sessions=(10 * (24 * 60 * 60 * 1000))
+// const taken_start_date = Date.parse('1996-06-04T00:00:00.000+00:00')
+// const taken_end_date=taken_start_date + number_of_sessions
+
+// const order_time=();
+
+// console.log(taken_start_date)
+// console.log(taken_end_date)

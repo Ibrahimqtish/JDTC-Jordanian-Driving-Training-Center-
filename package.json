@@ -19,6 +19,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.2",
     "nodemon": "^2.0.22",
+    "smtp-server": "^3.11.0",
     "strip": "^3.0.0",
     "stripe": "^9.16.0"
   },
