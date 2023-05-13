@@ -4,6 +4,8 @@ const {Course, order} =  require('../modules/products');
 const { PraperImage, PraperSingleImage } = require('../Utils/utils');
 
 
+
+
 const getCourse = async (req ,res)=>{
   try{
         //get product id from http header
@@ -39,7 +41,7 @@ const getUserProducts = async(req , res)=>{
     if (products)res.json(products)
     else res.status(400)
     }
-  }
+}
 //get all products and send it to the user
 const getAllProducts = async (req , res)=>{
   try {

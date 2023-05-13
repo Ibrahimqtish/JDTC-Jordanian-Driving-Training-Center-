@@ -6,13 +6,6 @@ const check_date= (proposed_course,taken_courses)=>{
       const proposed_course_end_date   = Date.parse(proposed_course.start_date)+(proposed_course.number_of_sessions * (24 * 60 * 60 * 1000))        
       //Loop all over courses
       for (let i = 0;i < taken_courses.length;i++){
-
-          console.log("taken_courses[i].courseID.start_time ",taken_courses[i].courseID.start_time)
-          console.log("proposed_course.start_time " ,proposed_course.start_time)
-
-          console.log("taken_courses[i].end_time ", taken_courses[i].courseID.end_time)
-          console.log("proposed_course.end_time " , proposed_course.end_time)
-
           const taken_end_date=(taken_courses[i].courseID.numberOfSessions * (24 * 60 * 60 * 1000)) + Date.parse(taken_courses[i].courseID.start_date)
           const taken_start_date=Date.parse(taken_courses[i].courseID.start_date)
 
@@ -29,31 +22,45 @@ const check_date= (proposed_course,taken_courses)=>{
       }
 }
 
+const CheckTimeConflicts = (taken_sessions,proposed_session)=>{
+   
+   const proposed_session_date=Date.parse(proposed_session.requested_date)
+   const start_time=proposed_session.start_time
+   const end_time=proposed_session.end_time
+
+   for (let i = 0;i < taken_sessions.length;i++){
+       console.log("taken date ", Date.parse(taken_sessions[i].requested_date))
+       console.log('proposed_session_date ' , proposed_session_date)
+       console.log("Date conflict with " + i,proposed_session_date==Date.parse(taken_sessions[i].requested_date))
+       
+       if (proposed_session_date==Date.parse(taken_sessions[i].requested_date)){
+         if ((start_time >= taken_sessions[i].start_time && start_time <= taken_sessions[i].end_time) || (end_time >= taken_sessions[i].start_time && end_time <= taken_sessions[i].end_time)){
+            return true
+         }
+       }
+   }
+}
+
 const pursh = async (req,res)=>{
    try{
       const userID = req.userId
       //get orders from requies body
       const RequestBody = req.body
       //fetch products data from data base
-      console.log(req.body)
       const courseID = RequestBody.courseID
-      //find prducts in data base with IDs
-      console.log("courseID " , courseID)
-      let db_courses = await Course.find({_id:courseID})
-      console.log( JSON.stringify(db_courses))
-      if (!db_courses.length){
-            res.json({"message":"course not exsists"})
-      }
-      let PrevOrders= await order.find({'userId':userID,'courseID':courseID})
-      //
-      let prev_orders=await order.find({'userId':userID}).populate('courseID')
-      console.log("prev_orders.courseID " , prev_orders.courseID)
+      console.log('==============================================Purchuse Request===============================================')
+      console.log("Requet Body " ,RequestBody)
+      console.log("CoursesID " ,RequestBody.courseID)
 
-      if (check_date(db_courses[0],prev_orders)){
-         return res.status(200).json({"Message":"you have time conflict"})  
+      const db_courses = await Course.find({_id:RequestBody.courseID})
+      console.log("Course From DB ",db_courses)
+      if (!db_courses){
+            return res.status(400).json({"message":"course not exsists"})
       }
-      if(PrevOrders.length){
-         return res.status(200).json({"Message":"you already paid for this course"})
+      let prev_orders=await order.find({'userId':userID}).populate('courseID')
+      
+      if (CheckTimeConflicts(prev_orders,RequestBody)){
+         return res.status(400).json({"Message":"you have time conflict"})  
       }
       //Prepare stripe order details object
       let stripe_orders = db_courses.map((item,index) =>{
@@ -68,14 +75,19 @@ const pursh = async (req,res)=>{
                      quantity:1}
       })
       //check order
-      console.log(stripe_orders)
+      // console.log(stripe_orders)
       order.userID = userID
       if(db_courses && db_courses.length !== 0){
          await stripe.checkout.sessions.create({
             payment_method_types :['card'],
             mode:'payment',
             line_items:stripe_orders,
-            metadata:{orders:JSON.stringify({'state':"pending",'userId':userID,'courseID':courseID})},
+            metadata:{orders:JSON.stringify({'state':"pending",
+                                             'userId':userID,
+                                             'courseID':courseID,
+                                             'start_time':RequestBody.start_time,
+                                             'end_time':RequestBody.end_time,
+                                             'requested_date':RequestBody.requested_date})},
             success_url: 'http://localhost:3000/',
             cancel_url: 'http://localhost:3000/'
          }).then((resulte)=>{
@@ -95,7 +107,7 @@ const pursh = async (req,res)=>{
 
 const updateProduct  = async (data) =>{
       console.log(data)
-      const NewOrders = await new order({'state':"active",'userId':data.userId,'courseID':data.courseID}).save()
+      const NewOrders = await new order({'state':"active",'userId':data.userId,'courseID':data.courseID,'start_time':data.start_time,"end_time":data.end_time,'requested_date':data.requested_date}).save()
       return NewOrders  
 }
 const webhook_callback =  (req , res)=>{
@@ -112,11 +124,11 @@ const webhook_callback =  (req , res)=>{
    }
    if(event.type === 'checkout.session.completed'){
       const session = event.data.object
-      console.log(session)
+      // console.log(session)
       data = JSON.parse(session.metadata.orders)
       data.stipe_checkout_session_id = session.payment_intent
       updateProduct(data)
-      console.log(data)
+      // console.log(data)
    }
    res.status(200).send()
 }

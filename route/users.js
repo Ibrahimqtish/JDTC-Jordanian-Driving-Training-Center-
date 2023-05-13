@@ -5,7 +5,7 @@ const authorization  = require('../middleWares/auth')
 const {addNewUser,edit_user_documents,
        add_user_profile_pictures,
        removeUser,getUserGroups,
-       login, g_auth0,getuserprofile,
+       login, g_auth0,getuserprofile,TrainingRequest,
        addUser,upload_profile_picture,deleteuser,
        editUserInformation,editUserProfile,loginWithGoogle,
        getAllUsers,admin_login, editUserInfo, getUserById, edit_user_profile_pictures}= require('../controllers/users')
@@ -29,5 +29,6 @@ const {addNewUser,edit_user_documents,
        router.post('/add_user_profile_pictures',add_user_profile_pictures)
        router.post('/upload-user-docs' ,authorization, edit_user_documents)
        router.delete('/delete/:id' ,authorization, deleteuser)
+       router.get('/TrainingRequest' ,authorization, TrainingRequest)
        
 module.exports = router

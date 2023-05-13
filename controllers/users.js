@@ -1,4 +1,4 @@
-const { user,userGroup } = require("../modules/products");
+const { user,userGroup, order, Course } = require("../modules/products");
 const jwt = require("jsonwebtoken");
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client("591903598674-746pln3so790djugv2no0n6024gnfg6h.apps.googleusercontent.com");
@@ -470,7 +470,17 @@ const deleteuser = async (req,res)=>{
     res.json({"message":err.message})
   }
 }
-module.exports={addNewUser,
+
+const TrainingRequest = async (req,res) =>{    
+    const course_ids = []
+    const UserCourses= await Course.find({constructorId:req.userId})
+    console.log(UserCourses)
+    for (let i = 0;i < UserCourses.length;i++){course_ids.push(UserCourses[i]._id)}
+    const OrdersPending = await order.find({courseID:{$in:course_ids}})
+    return res.json(OrdersPending)
+}
+
+module.exports={addNewUser,TrainingRequest,
                 add_user_profile_pictures,
                 getUserGroups,removeUser,
                 login, g_auth0,deleteuser,

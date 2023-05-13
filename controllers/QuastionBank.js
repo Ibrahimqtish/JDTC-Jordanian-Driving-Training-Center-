@@ -129,11 +129,8 @@ const getExamByCourse = async (req,res)=>{
         let TakenExamsIds=[]
         const TakenExamsList=await TakenExams.find({userId:req.userId,courseID:req.params.courseId})
         TakenExamsIds=TakenExamsList.map(item=>{return item.examId})
-        console.log("TakenExamsIds " , TakenExamsIds)
         if (ExamRecords.length){
-            //quations = await Quastion.find({_id:{$in:ExamRecords[0].quastions}})
-            for (let i = 0;i < ExamRecords.length;i++){
-                
+            for (let i = 0;i < ExamRecords.length;i++){                
                 if (!(check_containes(TakenExamsIds,ExamRecords[i]._id.toString()))){
                     const resulte = {"exam_Id":ExamRecords[i]._id}
                     return res.json(resulte)

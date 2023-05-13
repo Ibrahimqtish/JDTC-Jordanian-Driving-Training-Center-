@@ -21,7 +21,9 @@
     "nodemon": "^2.0.22",
     "smtp-server": "^3.11.0",
     "strip": "^3.0.0",
-    "stripe": "^9.16.0"
+    "stripe": "^9.16.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.3"
   },
   "devDependencies": {
     "nodeman": "^1.1.2"

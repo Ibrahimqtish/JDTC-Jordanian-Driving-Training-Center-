@@ -87,10 +87,14 @@ const FeedbackSchema = new Schema({
 });
 
 const orderSchema = new Schema({
+       userId:{type:mongoose.Schema.ObjectId,ref:"user",require:true},
+       start_time:{type:Number,require:true},
+       end_time:{type:Number,require:true},
+       requested_date:{type:Date,require:true},
+       courseID:{type:mongoose.Schema.ObjectId,ref:"Courses",require:true},
+       sessionId:{type:mongoose.Schema.ObjectId,ref:"AvilableSessions",require:true},
        order_data               : {type: Array  , required:false},
        stipe_checkout_session_id: {type: String , required:false},
-       courseID                 : {type: mongoose.Schema.ObjectId,ref:'Courses', required:true},
-       userId                   : {type: mongoose.Schema.ObjectId, required:true},
        state                    : {type: String , required:true},                
 });
 
@@ -122,7 +126,6 @@ const TakenExamsSchema = new Schema({
        answers:{type:Array,require:false}
 })
 
-
 const Course = mongoose.model('Courses',CoursesSchema);
 //user model
 const user = mongoose.model('user',usersSchema);
@@ -146,7 +149,6 @@ const Quastion = mongoose.model('Quastion',QuastionSchema);
 const Exams = mongoose.model('Exams',ExamsSchema);
 
 const TakenExams = mongoose.model('TakenExams',TakenExamsSchema);
-
 
 
 TrainingCenter.watch().on('change' , async (data)=>{
