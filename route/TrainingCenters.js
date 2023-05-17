@@ -18,8 +18,10 @@ class  TrainingCentersRouter{
             this.Router.put('/edit-training-center/:id',trainingControllers.editTrainingCenter)
             this.Router.delete('/delete-center/:id',trainingControllers.deleteCenter)
             this.Router.get('/getMusicList',trainingControllers.getMusicList)
+            this.Router.post('/submit-review',authorization,trainingControllers.SubmitReview)
+            this.Router.get('/getAllCenterReviews/:Id',trainingControllers.getAllCenterReviews)
        }
-} 
+}
 
 const Router = new TrainingCentersRouter() 
 module.exports  = Router.Router

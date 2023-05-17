@@ -21,33 +21,33 @@ const CoursesSchema = new Schema({
       numberOfSessions:   {type:String,require:true}
 })
 const TrainingCentersSchema = new Schema({
-    name:          {type:String,required:true},
-    photos:        {type:Array, required:false},
-    description:   {type:String, required:true},
-    open_time:     {type:Number,required:true},
-    close_time:    {type:Number,required:true},
-    contact_number:{type:String,required:false},
-    website       :{type:String,required:false},
-    longitude:     {type:String, required:false},
-    latitude:      {type:String,required:false},
-    location:      {type:String,required:false},
-    rate :         {type:Number, required:false,default:0},
-    active:        {type:Boolean,required:false,default:true}
+      name:          {type:String,required:true},
+      photos:        {type:Array, required:false},
+      description:   {type:String, required:true},
+      open_time:     {type:Number,required:true},
+      close_time:    {type:Number,required:true},
+      contact_number:{type:String,required:false},
+      website       :{type:String,required:false},
+      longitude:     {type:String, required:false},
+      latitude:      {type:String,required:false},
+      location:      {type:String,required:false},
+      rate :         {type:Number, required:false,default:0},
+      active:        {type:Boolean,required:false,default:true}
 })
 const CarsSchema = new Schema({        
-    name:             {type:String,required:true},
-    photos:           {type:Array, required:false},
-    model:            {type:String, required:false},
-    gear_type:        {type:String, required:true,enum:['automatec', 'manual']},
-    car_type:         {type:String, required:true,enum:['2-doors-sedan', '4-doors-sedan','bus',"truck"]},
-    active:           {type:Boolean,required:false,default:true},
-    trainingCentersId:{type:mongoose.Schema.ObjectId,required:true}, 
+      name:             {type:String,required:true},
+      photos:           {type:Array, required:false},
+      model:            {type:String, required:false},
+      gear_type:        {type:String, required:true,enum:['automatec', 'manual']},
+      car_type:         {type:String, required:true,enum:['2-doors-sedan', '4-doors-sedan','bus',"truck"]},
+      active:           {type:Boolean,required:false,default:true},
+      trainingCentersId:{type:mongoose.Schema.ObjectId,required:true}, 
 })
 const TrainersSchema = new Schema({                           
-    experiance:       {type:Number,required:true},
-    userId:           {type:String,required:true},
-    rate:             {type:Number,required:true},
-    trainingCentersId:{type:String,required:true},
+      experiance:       {type:Number,required:true},
+      userId:           {type:String,required:true},
+      rate:             {type:Number,required:true},
+      trainingCentersId:{type:String,required:true},
 })
 const userGroupSchema = new Schema({
       name:{type:String,required:true},
@@ -79,11 +79,10 @@ const usersSchema = new Schema({
 })
 
 const FeedbackSchema = new Schema({
-       productId  :{type : String , required:true},
-       commentText:{type:String ,  required:true},
-       createdby  :{type: String ,   required:true},
-       username   :{type:String , required:true},
-       userimage  :{type:String ,required:false}
+       CenterId  :{type:mongoose.Schema.ObjectId,required:true,ref:'user'},
+       feedback   :{type:String ,  required:true},
+       userId    :{type:mongoose.Schema.ObjectId,required:true,ref:'TrainingCenters'},
+       rate      :{type:Number , required:true}
 });
 
 const orderSchema = new Schema({
@@ -93,9 +92,9 @@ const orderSchema = new Schema({
        requested_date:{type:Date,require:true},
        courseID:{type:mongoose.Schema.ObjectId,ref:"Courses",require:true},
        sessionId:{type:mongoose.Schema.ObjectId,ref:"AvilableSessions",require:true},
-       order_data               : {type: Array  , required:false},
+       order_data               : {type: Object , required:false},
        stipe_checkout_session_id: {type: String , required:false},
-       state                    : {type: String , required:true},                
+       state                    : {type: String , required:true},
 });
 
 const QuastionsBankSchema = new Schema({
