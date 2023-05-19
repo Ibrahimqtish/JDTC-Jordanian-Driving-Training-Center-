@@ -14,12 +14,11 @@ const CarsRouter = require('./route/Car')
 const ConstructorsRouter = require('./route/Constructor')
 const ImageRouter=require('./route/Image')
 const QuastionsRouter=require('./route/Quastion')
-const {options}=require('../SwagerOptions')
 //import file for connect to the database 
 const {conntect} = require('./modules/database')
 const bodyParser = require("body-parser")
 const swaggerJsdoc = require("swagger-jsdoc")
-const swaggerUi = require("swagger-ui-express");
+
 //import libraries required or server operations جلب المكتبات الخاصة في تشغيل السيرفر 
 //JWT is library used or sign authentication key هي مكتبة مخصصة لتوقيع او لأنشاء مفتاح للمستخدم
 const jwt = require('jsonwebtoken')
@@ -55,11 +54,7 @@ class Server{
           this.app.use('/api/v1/centers',express.json(),TrainingCenter)
           this.app.use('/api/v1/cars',express.json(),CarsRouter)
           this.app.use('/api/v1/constructros',express.json(),ConstructorsRouter)
-          this.swagerConfig()
-    }
-    swagerConfig(){
-        this.specs = swaggerJsdoc(options)
-        this.app.use("/docs",swaggerUi.serve,swaggerUi.setup(this.specs));
+
     }
     //Connect to the database and start the server
     StartServer(port){
