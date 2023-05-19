@@ -7,7 +7,7 @@ const {getAllProducts,
       editeProduct,
       deleteProduct,myCourses,
       upload_coures_pictures,DeleteCourseById,
-      getUserProducts,getCoursesByCenterId,
+      getUserProducts,getCoursesByCenterId,SubmitReview,getAllCourseReviews,
       editCourse} = require('../controllers/products')
 
 authorization= require('../middleWares/auth')
@@ -30,6 +30,8 @@ class ProductRouter{
             this.router.get('/mycourses',authorization,myCourses)
             this.router.get('/get-courses-by-center-id/:id',getCoursesByCenterId)
             this.router.delete('/deleteCourseById/:id',DeleteCourseById)
+            this.router.post('/submit-review',authorization,SubmitReview)
+            this.router.get('/get-all-course-reviews/:center_id',getAllCourseReviews)
   }
 }
 const router = new ProductRouter() 

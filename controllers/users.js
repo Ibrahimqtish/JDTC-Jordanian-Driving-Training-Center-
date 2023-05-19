@@ -5,6 +5,7 @@ const client = new OAuth2Client("591903598674-746pln3so790djugv2no0n6024gnfg6h.a
 const public_keys = require("../google-puclic-keys");
 const fs = require("fs");
 const {PraperSingleImage } = require("../Utils/utils");
+const { PraperImage } = require("../Utils/utils");
 
 
 const  editUserInformation = async (req, res) => {
@@ -474,9 +475,14 @@ const deleteuser = async (req,res)=>{
 const TrainingRequest = async (req,res) =>{    
     const course_ids = []
     const UserCourses= await Course.find({constructorId:req.userId})
-    console.log(UserCourses)
     for (let i = 0;i < UserCourses.length;i++){course_ids.push(UserCourses[i]._id)}
     const OrdersPending = await order.find({courseID:{$in:course_ids}})
+    for (let i = 0; i < OrdersPending.length;i++){
+      console.log('Get course data ' , OrdersPending[i].order_data[0])
+      if (OrdersPending[i].order_data.length && OrdersPending[i].order_data[0].photos){
+        OrdersPending[i].order_data[0].photos =  PraperImage(OrdersPending[i].order_data[0].photos,req.headers.host)
+      }
+    }
     return res.json(OrdersPending)
 }
 

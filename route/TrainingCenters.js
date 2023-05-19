@@ -19,7 +19,7 @@ class  TrainingCentersRouter{
             this.Router.delete('/delete-center/:id',trainingControllers.deleteCenter)
             this.Router.get('/getMusicList',trainingControllers.getMusicList)
             this.Router.post('/submit-review',authorization,trainingControllers.SubmitReview)
-            this.Router.get('/getAllCenterReviews/:Id',trainingControllers.getAllCenterReviews)
+            this.Router.get('/getAllCenterReviews/:center_id',trainingControllers.getAllCenterReviews)
        }
 }
 

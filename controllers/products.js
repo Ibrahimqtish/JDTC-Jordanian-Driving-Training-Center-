@@ -1,6 +1,6 @@
 const { response } = require('express');
 const { default: mongoose } = require('mongoose');
-const {Course, order} =  require('../modules/products');
+const {Course, order, CourseFeedback} =  require('../modules/products');
 const { PraperImage, PraperSingleImage } = require('../Utils/utils');
 
 
@@ -310,9 +310,36 @@ const DeleteCourseById = async (req,res)=>{
   }
 }
 
+const SubmitReview = async (req,res)=>{
+    const {rate , value , center_id} = req.body
+    if (rate && value && center_id){
+        const NewFeedback = await new CourseFeedback({CenterId:center_id,feedback:value,rate:rate,userId:req.userId}).save()
+        const Feedbacks = await CourseFeedback.find({CenterId:center_id})
+        let reviewsSum =  0
+        for (let i = 0; i < Feedbacks.length;i++){reviewsSum+=Feedbacks[i].rate}
+        const newRateValue = reviewsSum/Feedbacks.length
+        const course = await Course.updateOne({'_id':center_id},{$set:{rate:newRateValue,reviews_count:Feedbacks.length}})
+        return res.json(NewFeedback)  
+    }else{
+        return res.status(405).json({"Message":"required fields"})
+    }
+}
+const getAllCourseReviews = async (req,res) =>{
+    try{
+      const center_id=req.params.center_id 
+      const Feedbacks = await CourseFeedback.find({CenterId:center_id}).populate('userId')
+      for (let i of Feedbacks){
+        i.userId.profile_pic=PraperSingleImage(i.userId.profile_pic,req.headers.host)
+      }
+      return res.json(Feedbacks)
+    }catch(err){
+    return res.json({"message":err.message})
+    }
+}
+
 //Exports the functions
 module.exports={getCourse ,myCourses, 
                 getAllProducts,addCourse, 
                 editeProduct,deleteProduct,
                 upload_coures_pictures,getCoursesByCenterId,
-                getUserProducts,editCourse,DeleteCourseById}
+                getUserProducts,editCourse,DeleteCourseById,SubmitReview,getAllCourseReviews}

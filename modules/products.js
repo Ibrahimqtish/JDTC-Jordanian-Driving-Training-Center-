@@ -9,6 +9,7 @@ const CoursesSchema = new Schema({
       coste           :   {type:Number, required:false,delfult : 1},
       currency        :   {type:String,enum:['jo',"usd"]},
       rate            :   {type:Number, required:false,default  : 0},
+      reviews_count   :   {type:Number, required:false,default  : 0},
       constructorId   :   {type:mongoose.Schema.ObjectId,required:true,ref:'user'},
       active          :   {type:Boolean,required:false,default:true},
       TrainingCenterId:   {type:mongoose.Schema.ObjectId,ref:'TrainingCenters',required:true},
@@ -32,6 +33,7 @@ const TrainingCentersSchema = new Schema({
       latitude:      {type:String,required:false},
       location:      {type:String,required:false},
       rate :         {type:Number, required:false,default:0},
+      reviews_count :{type:Number, required:false,default:0},
       active:        {type:Boolean,required:false,default:true}
 })
 const CarsSchema = new Schema({        
@@ -79,11 +81,18 @@ const usersSchema = new Schema({
 })
 
 const FeedbackSchema = new Schema({
-       CenterId  :{type:mongoose.Schema.ObjectId,required:true,ref:'user'},
+       CenterId  :{type:mongoose.Schema.ObjectId,required:true,ref:'TrainingCenters'},
        feedback   :{type:String ,  required:true},
-       userId    :{type:mongoose.Schema.ObjectId,required:true,ref:'TrainingCenters'},
+       userId    :{type:mongoose.Schema.ObjectId,required:true,ref:'user'},
        rate      :{type:Number , required:true}
 });
+const CourseFeedbackSchema = new Schema({
+      CourseId  :{type:mongoose.Schema.ObjectId,required:true,ref:'TrainingCenters'},
+      feedback  :{type:String ,  required:true},
+      userId    :{type:mongoose.Schema.ObjectId,required:true,ref:'user'},
+      rate      :{type:Number , required:true}
+});
+
 
 const orderSchema = new Schema({
        userId:{type:mongoose.Schema.ObjectId,ref:"user",require:true},
@@ -130,6 +139,8 @@ const Course = mongoose.model('Courses',CoursesSchema);
 const user = mongoose.model('user',usersSchema);
 //category model
 const Feedback = mongoose.model('Feedback',FeedbackSchema);
+//course feedback
+const CourseFeedback = mongoose.model('CourseFeedback',FeedbackSchema);
 //create order in wait
 const order = mongoose.model('order',orderSchema);
 //categories
@@ -171,4 +182,4 @@ QuastionBank.watch().on('change' , async (data)=>{
         }
 })
 //exports the models
-module.exports = {Course,user,Cars,order,TrainingCenter,Feedback,userGroup,Traniners,QuastionBank,Quastion,Exams,TakenExams}
+module.exports = {Course,user,Cars,order,TrainingCenter,Feedback,userGroup,Traniners,QuastionBank,Quastion,Exams,TakenExams,CourseFeedback}

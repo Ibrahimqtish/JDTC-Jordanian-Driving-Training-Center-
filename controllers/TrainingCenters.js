@@ -1,6 +1,6 @@
 const { response } = require('express');
 const {TrainingCenter, Feedback} =  require('../modules/products');
-const { PraperImage } = require('../Utils/utils');
+const { PraperImage, PraperSingleImage } = require('../Utils/utils');
 const { Mongoose } = require('mongoose');
 const { default: mongoose } = require('mongoose');
 
@@ -170,14 +170,26 @@ const SubmitReview = async (req,res)=>{
       const {rate , value , center_id} = req.body
       if (rate && value && center_id){
         const NewFeedback = await new Feedback({CenterId:center_id,feedback:value,rate:rate,userId:req.userId}).save()
-        return res.json(NewFeedback)  
+        const Feedbacks = await Feedback.find({CenterId:center_id})
+        let reviewsSum =  0
+        for (let i = 0; i < Feedbacks.length;i++){reviewsSum+=Feedbacks[i].rate}
+        const newRateValue = reviewsSum/Feedbacks.length
+        await TrainingCenter.updateOne({'_id':center_id},{$set:{rate:newRateValue,reviews_count:Feedbacks.length}})
+        return res.json(NewFeedback)
       }else{
         return res.status(405).json({"Message":"required fields"})  
       }
 }
 const getAllCenterReviews = async (req,res) =>{
-  const center_id=req.params.center_id 
-  const Feedbacks = await Feedback.find({CenterId:center_id})
-  return Feedbacks
+  try{
+      const center_id=req.params.center_id 
+      const Feedbacks = await Feedback.find({CenterId:center_id}).populate('userId')
+      for (let i of Feedbacks){
+        i.userId.profile_pic=PraperSingleImage(i.userId.profile_pic,req.headers.host)
+      }
+      return res.json(Feedbacks)
+  }catch(err){
+    return res.json({"message":err.message})
+  }
 }
 module.exports={addTrainingCenter,upload_product_pictures,getAllTrainingCenters,getTraningCenterById,editTrainingCenter,deleteCenter,getMusicList,SubmitReview,getAllCenterReviews}
