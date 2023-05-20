@@ -1,4 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SEC_KEY)
+const { PraperImage } = require('../Utils/utils')
 const {Course,order} = require('../modules/products')
 
 const check_date= (proposed_course,taken_courses)=>{
@@ -46,8 +47,15 @@ const get_all_user_requests = async (req,res)=>{
    try{
       const userId = req.userId
       const Order = await order.find({'userId':userId})
+      for (let i = 0; i < Order.length;i++){
+         if (Order[i].order_data.length && Order[i].order_data[0].photos){
+             Order[i].order_data[0].photos =  PraperImage(Order[i].order_data[0].photos,req.headers.host)
+         }
+         console.log('Get course data ' , Order[i].order_data[0])
+      }
       res.json(Order)
    }catch(err){
+      console.log(err)
       res.json({'message':'Something went wrong'})
    }
 }
@@ -89,8 +97,8 @@ const pursh = async (req,res)=>{
                                              'end_time':RequestBody.end_time,
                                              'RequestId':RequestId,
                                              'requested_date':RequestBody.requested_date})},
-            success_url: 'http://localhost:3000/',
-            cancel_url: 'http://localhost:3000/'
+            success_url: 'http://localhost:3000/settings/mycourses',
+            cancel_url: 'http://localhost:3000/settings/mycourses'
          }).then((resulte)=>{
             //return the response to the user
             return res.json(resulte)
