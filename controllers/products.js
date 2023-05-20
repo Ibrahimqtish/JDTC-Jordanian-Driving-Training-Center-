@@ -311,29 +311,34 @@ const DeleteCourseById = async (req,res)=>{
 }
 
 const SubmitReview = async (req,res)=>{
-    const {rate , value , center_id} = req.body
-    if (rate && value && center_id){
-        const NewFeedback = await new CourseFeedback({CenterId:center_id,feedback:value,rate:rate,userId:req.userId}).save()
-        const Feedbacks = await CourseFeedback.find({CenterId:center_id})
-        let reviewsSum =  0
-        for (let i = 0; i < Feedbacks.length;i++){reviewsSum+=Feedbacks[i].rate}
-        const newRateValue = reviewsSum/Feedbacks.length
-        const course = await Course.updateOne({'_id':center_id},{$set:{rate:newRateValue,reviews_count:Feedbacks.length}})
-        return res.json(NewFeedback)  
-    }else{
-        return res.status(405).json({"Message":"required fields"})
-    }
+  try{
+        const {rate , value , center_id} = req.body
+        if (rate && value && center_id){
+            const NewFeedback = await new CourseFeedback({CourseId:center_id,feedback:value,rate:rate,userId:req.userId}).save()
+            const Feedbacks = await CourseFeedback.find({CourseId:center_id})
+            let reviewsSum =  0
+            for (let i = 0; i < Feedbacks.length;i++){reviewsSum+=Feedbacks[i].rate}
+            const newRateValue = reviewsSum/Feedbacks.length
+            const course = await Course.updateOne({'_id':center_id},{$set:{rate:newRateValue,reviews_count:Feedbacks.length}})
+            return res.json(NewFeedback)  
+        }else{
+            return res.status(405).json({"Message":"required fields"})
+        }
+
+  }catch(err){
+      res.status(500).json({"message":"somthing went wrong"})
+  }
 }
 const getAllCourseReviews = async (req,res) =>{
     try{
       const center_id=req.params.center_id 
-      const Feedbacks = await CourseFeedback.find({CenterId:center_id}).populate('userId')
+      const Feedbacks = await CourseFeedback.find({CourseId:center_id}).populate('userId')
       for (let i of Feedbacks){
         i.userId.profile_pic=PraperSingleImage(i.userId.profile_pic,req.headers.host)
       }
       return res.json(Feedbacks)
     }catch(err){
-    return res.json({"message":err.message})
+      return res.json({"message":err.message})
     }
 }
 

@@ -279,7 +279,7 @@ const edit_user_documents = async(req , res)=>{
             const sign = jwt.sign({ userId: response._id },process.env.ACCESS_TOKEN_SECRET);
             return res.json({ session_key: sign });
           })
-          .then((err) => {
+          .catch((err) => {
             console.log(err);
             return res.status(401).json({ message: "invaled token" });
           });

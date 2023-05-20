@@ -136,9 +136,9 @@ const getExamByCourse = async (req,res)=>{
                     return res.json(resulte)
                 }
             }
-            return res.status(404).json({"message":"There is no exam for you"})
+            return res.status(601).json({"message":"There is no exam for you"})
         }else{
-            return res.status(404).json({"message":"There is now exam"})
+            return res.status(602).json({"message":"There is now exams for this course"})
         } 
 
    }catch(err){
@@ -163,7 +163,7 @@ const getExamById = async (req,res)=>{
          const ExamRecords = await Exams.find({_id:req.params.examId})
          const quations    = await Quastion.find({_id:{$in:ExamRecords[0].quastions}})
          const ExamRecordsObject = ExamRecords[0].toObject()  
-         const resulte = {"courseID":ExamRecordsObject.courseID ,"exam_Id": ExamRecordsObject._id , "quations":quations} 
+         const resulte = {"courseID":ExamRecordsObject.courseID ,"exam_Id": ExamRecordsObject._id , "quations":quations,ExamLength:ExamRecordsObject.ExamLength,ExamLengthType:ExamRecordsObject.ExamLengthType} 
          return res.json(resulte)
     }catch(err){
      console.log(err)
@@ -175,6 +175,7 @@ const SubmitAnswers = async (req,res)=>{
          let totalMark = 0
          const examData = req.body
          const QuasetionsIds = []
+         const CurrentExam = await Exams.findOne({_id:examData.examId})
          for (let i = 0;i < examData.Answers.length;i++){
              for (const [key,value] of Object.entries(examData.Answers[i])){
                   QuasetionsIds.push(key)
@@ -184,16 +185,20 @@ const SubmitAnswers = async (req,res)=>{
          for (let i = 0;i < quations.length;i++){
              if (quations[i].correct_answer == examData.Answers[i][quations[i]._id]){
                 console.log("You got it right")
-                totalMark += 1
+                console.log(CurrentExam.question_mark)
+                totalMark += CurrentExam.question_mark
              }else{
                 console.log("You got it wrong")
                 console.log("You got it fuck you")
              }
          }
+         const full_mark=CurrentExam.question_mark * CurrentExam.quastions.length
          const resulte = await new TakenExams({"examId":examData.examId,
                                                 'userId':req.userId,
                                                 'courseID':examData.courseID,
-                                                'answers':examData.Answers,mark:totalMark}).save()
+                                                'answers':examData.Answers,
+                                                'mark':totalMark,
+                                                'full_mark':full_mark}).save()
          return res.json(resulte)
     }catch(err){
      console.log(err)
@@ -211,6 +216,7 @@ const getExamResulte = async (req,res)=>{
          const CourseRecords = await Course.findOne({_id:ExamRecords.courseID})
          if (TakenExam){
             result['Mark']=TakenExam.mark
+            result['full_mark'] = TakenExam.full_mark
          }
          if (ExamRecords){
             result['ExamName'] = ExamRecords.name 

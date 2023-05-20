@@ -92,8 +92,6 @@ const CourseFeedbackSchema = new Schema({
       userId    :{type:mongoose.Schema.ObjectId,required:true,ref:'user'},
       rate      :{type:Number , required:true}
 });
-
-
 const orderSchema = new Schema({
        userId:{type:mongoose.Schema.ObjectId,ref:"user",require:true},
        start_time:{type:Number,require:true},
@@ -105,7 +103,6 @@ const orderSchema = new Schema({
        stipe_checkout_session_id: {type: String , required:false},
        state                    : {type: String , required:true},
 });
-
 const QuastionsBankSchema = new Schema({
        name        : {type: String , required:true},
        qustions    : {type: Array  , required:false},
@@ -125,13 +122,17 @@ const ExamsSchema = new Schema({
        courseID :{type:String , required:true},
        quastionBankId:{type:String ,required:true},
        quastions:{type: Array  , required:true},
+       ExamLength:{type: Number  , required:false},
+       ExamLengthType:{type: String  , required:false},
+       question_mark:{type: Number  , required:true},
 })
 const TakenExamsSchema = new Schema({
        examId  :{type:String,require:true},
        userId  :{type:String,require:true},
        courseID:{type:String,require:true},
        mark    :{type:Number,require:true},
-       answers:{type:Array,require:false}
+       answers :{type:Array,require:false},
+       full_mark:{type:Number,require:true},
 })
 
 const Course = mongoose.model('Courses',CoursesSchema);
@@ -140,7 +141,7 @@ const user = mongoose.model('user',usersSchema);
 //category model
 const Feedback = mongoose.model('Feedback',FeedbackSchema);
 //course feedback
-const CourseFeedback = mongoose.model('CourseFeedback',FeedbackSchema);
+const CourseFeedback = mongoose.model('CourseFeedback',CourseFeedbackSchema);
 //create order in wait
 const order = mongoose.model('order',orderSchema);
 //categories
