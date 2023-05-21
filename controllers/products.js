@@ -143,7 +143,7 @@ const upload_coures_pictures = async(req , res)=>{
           //loop all over the files
           Object.keys(req.files).forEach((item,index)=>{
             //create url and move the file to it
-            const url = `images/courses/${courseId}/courseImages/${req.files[item].name}`
+            const url = `images/courses/${courseId}/courseImages/${index+req.files[item].name}`
             req.files[item].mv(url,err =>{
                 if (err)return res.status(400).json({message:"error uploading imgs"})
                 urls.push(url)

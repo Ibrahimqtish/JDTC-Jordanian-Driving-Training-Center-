@@ -76,10 +76,10 @@ const upload_product_pictures = async(req , res)=>{
             //loop all over the files
             Object.keys(req.files).forEach((item,index)=>{
               //Create url and move the file to it
-              const url = `images/TraningCenters/${CenterID}/TraningCenterImages/${req.files[item].name}`
+              const url = `images/TraningCenters/${CenterID}/TraningCenterImages/${index+req.files[item].name}`
               req.files[item].mv(url).then(newurl =>{
                 urls.push(url)
-                if(index === Object.keys(req.files).length -1){
+                if(urls.length == Object.keys(req.files).length){
                   resol(urls)                       
                 }
               }).catch(err=>{
@@ -102,8 +102,7 @@ const upload_product_pictures = async(req , res)=>{
       }
     }catch(err){
       res.json({message:err.message})
-    }
-  
+    } 
 }
 async function getTraningCenterById(req,res){
   try{
