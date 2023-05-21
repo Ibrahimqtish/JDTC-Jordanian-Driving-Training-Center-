@@ -109,6 +109,26 @@ const getAllProducts = async (req , res)=>{
 
  
 
+// const upload_coures_pictures = async (req,res) =>{
+//       const courseId = req.headers['courseid']
+//       if(!req.files || !courseId){return res.status(403).json({"message":"Lack params"})}
+//       const course = await Course.find({_id:courseId})
+
+//       if (!course)return res.status(403).json({"message":"course is not  exists"})
+
+//       const files = req.files
+//       const imageUrls = []
+//       for (const [key,value] of Object.entries(files)){
+//         const url = `images/courses/${courseId}/courseImages/${value.name}`
+//           const image = await value.mv(url,(err) =>{
+//             if (err) return res.json({"message":"something went wrong"})
+//             console.log(err)
+//             imageUrls.push(url)
+//           })
+//       }
+//       Course.updateOne({_id:courseId} , {$set:{ photos:imageUrls}}).then(resulte=>{res.status(200).json({message:"course photo has been updated"})})
+// }
+
 const upload_coures_pictures = async(req , res)=>{
   try{
     console.log("Uploading Image ",req.files)
@@ -124,18 +144,15 @@ const upload_coures_pictures = async(req , res)=>{
           Object.keys(req.files).forEach((item,index)=>{
             //create url and move the file to it
             const url = `images/courses/${courseId}/courseImages/${req.files[item].name}`
-            req.files[item].mv(url).then(newurl =>{
-              urls.push(url)
-              if(index === Object.keys(req.files).length -1){
-                resol(urls)                       
-              }
-            }).catch(err=>{
-              console.log("err 1 " + err.message)
-              return res.status(400).json({message:"error uploading imgs"})
+            req.files[item].mv(url,err =>{
+                if (err)return res.status(400).json({message:"error uploading imgs"})
+                urls.push(url)
+                console.log((urls.length == Object.keys(req.files).length))
+                if((urls.length == Object.keys(req.files).length)){resol(urls)}
             })
           })
         }).then((movedFiles =>{
-          console.log(movedFiles)
+          console.log("movedFiles ", movedFiles)
           if(movedFiles.length !== 0){
              Course.updateOne({_id:courseId} , {$set:{photos:movedFiles}}).then(resulte=>{
               res.status(200).json({message:"course photo has been updated"})             
