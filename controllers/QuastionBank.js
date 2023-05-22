@@ -258,7 +258,46 @@ const EditQuastionsBank = async (req,res)=>{
        res.status(402).json({"message":err.message}) 
     }
 }
+const DeleteQuestionBank = async (req,res)=>{
+    try{
+        const id = req.params.id
+        if (id){
+          const deletedCourse= await QuastionBank.deleteOne({_id:id})
+          const NewData = await QuastionBank.find()
+          return res.json(NewData)
+        }
+    }catch(err){
+        console.log(ere)
+        res.json({"message":err.message})
+    }
+}
+const DeleteQuestion = async (req,res)=>{
+    try{
+        const id = req.params.id
+        if (id){
+          const DeleteQuestion= await Quastion.deleteOne({_id:id})
+          const NewData = await Quastion.find()
+          return res.json(NewData)
+        }
+    }catch(err){
+        console.log(ere)
+        res.json({"message":err.message})
+    }
+}
+const DeleteExam = async (req,res)=>{
+    try{
+        const id = req.params.id
+        if (id){
+          const DeleteQuestion= await Exams.deleteOne({_id:id})
+          const NewData = await Exams.find()
+          return res.json(NewData)
+        }
+    }catch(err){
+        console.log(ere)
+        res.json({"message":err.message})
+    }
+}
 module.exports={AddQuastionsBank,getQuastionsBanks,AddQuastions,getQuastions,addExam,getExams,
                 getExamByCourse,getExamById,SubmitAnswers,getQuastionByID,
-                EditQuastions,getNativeExamById,EditQuastionsBank,
-                EditExam,getExamResulte,getBankByID}
+                EditQuastions,getNativeExamById,EditQuastionsBank,DeleteQuestion,
+                EditExam,getExamResulte,getBankByID,DeleteQuestionBank,DeleteExam}

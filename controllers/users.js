@@ -233,11 +233,29 @@ const edit_user_documents = async(req , res)=>{
       return res.status(400).json({ message: err });
     }
   }
-  async function getuserprofile(req, res) {
+const setUserGroup =(response,code) =>{
+  switch (code){
+    case 'TRANIER':
+      response.isTranier=true;break;
+    case 'ADMIN':
+      response.isAdmin=true;break;
+    case 'USER':
+      response.isUser=true;break;
+    default:
+      response.isUser=true;break;
+  }
+
+}
+async function getuserprofile(req, res) {
     const userId = req.userId;
-    console.log(userId);
     if (userId) {
-      const userData = user.find({ _id: userId }).then((ressponse) => {
+      const userData = user.find({ _id: userId }).then(async (ressponse) => {
+        if (ressponse[0].group_id){
+          const group = await userGroup.findOne({_id:ressponse[0].group_id})
+          const code =  group.code ? group.code : ''
+          setUserGroup(ressponse[0],code)
+        }
+        // ressponse[0].isUser=true
         ressponse[0].profile_pic = ressponse[0].profile_pic ? PraperSingleImage(ressponse[0].profile_pic,req.headers.host) : ""
         ressponse[0].driving_license_front = ressponse[0].driving_license_front ? PraperSingleImage(ressponse[0].driving_license_front,req.headers.host) : ""
         ressponse[0].driving_license_back = ressponse[0].driving_license_back ? PraperSingleImage(ressponse[0].driving_license_back,req.headers.host) : ""
@@ -285,7 +303,7 @@ const edit_user_documents = async(req , res)=>{
           });
       }
     }
-  }
+}
 
 const loginWithGoogle = async (req,res)=>{
   console.log(req.headers['auth-key'])
@@ -337,17 +355,16 @@ const admin_login = async (req, res) => {
       if (userData[0]){
         const user_group =  await userGroup.find({_id:userData[0].group_id});
         if(user_group[0].code === 'ADMIN'){
-          console.log(" user_group[0].code " ,user_group[0].code)
             const sign = jwt.sign({ userId: userData[0]._id },process.env.ACCESS_TOKEN_SECRET);
             console.log("login done!");
             return res.json({ session_key: sign });
         }else{
-          return res.status(401).json({"message":"you are not admin user"});
+          return res.status(601).json({"message":"you are not admin user"});
         }
       } else {
         return res
-          .status(401)
-          .json({ message: "You are not registered in this application , account information is wrong" });
+          .status(602)
+          .json({ message: "Your don't have an account" });
       }
     } else {
       console.log("no information provided");
@@ -486,6 +503,23 @@ const TrainingRequest = async (req,res) =>{
     return res.json(OrdersPending)
 }
 
+const getAdminProfile = async (req,res) =>{
+  const userId = req.userId;
+  if (userId) {
+    const userData = user.find({ _id: userId }).then(async (ressponse) => {
+      ressponse[0].profile_pic = ressponse[0].profile_pic ? PraperSingleImage(ressponse[0].profile_pic,req.headers.host) : ""
+      ressponse[0].driving_license_front = ressponse[0].driving_license_front ? PraperSingleImage(ressponse[0].driving_license_front,req.headers.host) : ""
+      ressponse[0].driving_license_back = ressponse[0].driving_license_back ? PraperSingleImage(ressponse[0].driving_license_back,req.headers.host) : ""
+      ressponse[0].citizenship_id_front = ressponse[0].citizenship_id_front ? PraperSingleImage(ressponse[0].citizenship_id_front,req.headers.host) : ""
+      ressponse[0].citizenship_id_back = ressponse[0].citizenship_id_back ? PraperSingleImage(ressponse[0].citizenship_id_back,req.headers.host) : ""
+      return res.json(ressponse[0]);
+    });
+    console.log('With admin info ',userData)
+  } else {
+    return res.status(401).send({ message: "unauthorized user" });
+  }
+}
+
 module.exports={addNewUser,TrainingRequest,
                 add_user_profile_pictures,
                 getUserGroups,removeUser,
@@ -496,4 +530,6 @@ module.exports={addNewUser,TrainingRequest,
                 admin_login,editUserInfo,
                 getUserById,editUserProfile,
                 edit_user_profile_pictures,
-                edit_user_documents,loginWithGoogle};
+                edit_user_documents,loginWithGoogle,
+                getAdminProfile
+              };

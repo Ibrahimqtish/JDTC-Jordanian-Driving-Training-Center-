@@ -1,5 +1,5 @@
 const exp  = require('express')
-const authorization= require('../middleWares/auth')
+const {authorization}= require('../middleWares/auth')
 const CarsControllers = require("../controllers/Car")
 
 class  CarRouter{

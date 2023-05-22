@@ -1,5 +1,5 @@
 const exp  = require('express')
-const authorization= require('../middleWares/auth')
+const {authorization}= require('../middleWares/auth')
 const QuastionBank = require("../controllers/QuastionBank")
 
 class  QustionBank{
@@ -27,6 +27,9 @@ class  QustionBank{
             this.Router.get('/getExamResulte/:examId',authorization,QuastionBank.getExamResulte)
             this.Router.get('/getBankById/:id',QuastionBank.getBankByID)
             this.Router.put('/edit-quastion-bank/:id',QuastionBank.EditQuastionsBank)
+            this.Router.delete('/deleteExam/:id',QuastionBank.DeleteExam)
+            this.Router.delete('/deleteQuestion/:id',QuastionBank.DeleteQuestion)
+            this.Router.delete('/deleteQuestionBank/:id',QuastionBank.DeleteQuestionBank)
        }
 }
 

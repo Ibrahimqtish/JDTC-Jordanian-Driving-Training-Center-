@@ -1,6 +1,6 @@
 const express = require('express')
 const router =  express.Router()
-const authorization  = require('../middleWares/auth')
+const {authorization}  = require('../middleWares/auth')
 
 const { addCommment 
        ,deleteCommment,

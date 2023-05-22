@@ -1,13 +1,13 @@
 const express = require('express')
 const router =  express.Router()
-const authorization  = require('../middleWares/auth')
+const {authorization,AdminAuthorization}  = require('../middleWares/auth')
 
 const {addNewUser,edit_user_documents,
        add_user_profile_pictures,
        removeUser,getUserGroups,
        login, g_auth0,getuserprofile,TrainingRequest,
        addUser,upload_profile_picture,deleteuser,
-       editUserInformation,editUserProfile,loginWithGoogle,
+       editUserInformation,editUserProfile,loginWithGoogle,getAdminProfile,
        getAllUsers,admin_login, editUserInfo, getUserById, edit_user_profile_pictures}= require('../controllers/users')
        
        router.post('/login-with-google',loginWithGoogle)
@@ -30,5 +30,6 @@ const {addNewUser,edit_user_documents,
        router.post('/upload-user-docs' ,authorization, edit_user_documents)
        router.delete('/delete/:id' ,authorization, deleteuser)
        router.get('/TrainingRequest' ,authorization, TrainingRequest)
+       router.get('/getAdminProfile',AdminAuthorization,getAdminProfile)
        
 module.exports = router

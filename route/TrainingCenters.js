@@ -1,5 +1,5 @@
 const exp  = require('express')
-const authorization= require('../middleWares/auth')
+const {authorization}= require('../middleWares/auth')
 const trainingControllers = require("../controllers/TrainingCenters")
 
 class  TrainingCentersRouter{

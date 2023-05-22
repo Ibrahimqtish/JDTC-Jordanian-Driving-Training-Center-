@@ -2,7 +2,7 @@ const bodyparser = require('body-parser')
 
 const OrdersRouter = require('express').Router()
 const {pursh,webhook_callback,placeRequest,AproveRequest,get_all_user_requests} = require('../controllers/order')
-const authorization = require('../middleWares/auth')
+const {authorization} = require('../middleWares/auth')
 //get order
 OrdersRouter.post('/purhes',[bodyparser.json(),authorization], pursh)
 OrdersRouter.post('/placeRequest',[bodyparser.json(),authorization], placeRequest)

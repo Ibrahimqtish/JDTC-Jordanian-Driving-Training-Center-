@@ -3,7 +3,7 @@ const AppRouter = require('express').Router()
 //Application Controllers
 const {App} = require('../controllers/Applications')
 
-const authorization = require('../middleWares/auth')
+const {authorization} = require('../middleWares/auth')
 const Apple = new App() 
 //get order
 AppRouter.post('/addapp',authorization,Apple.AddApplication)

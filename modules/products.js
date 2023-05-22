@@ -61,6 +61,8 @@ const usersSchema = new Schema({
       profile_pic :     {type:String,required:false},
       password:         {type:String,required:false},
       isAdmin :         {type:Boolean,required:false},
+      isUser :          {type:Boolean,required:false},
+      isTranier :       {type:Boolean,required:false},
       phone_number:     {type:String,required:false},
       email:            {type:String,required:true},
       group_id:         {type:String,required:false},

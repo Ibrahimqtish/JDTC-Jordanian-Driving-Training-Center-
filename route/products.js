@@ -9,8 +9,8 @@ const {getAllProducts,
       upload_coures_pictures,DeleteCourseById,
       getUserProducts,getCoursesByCenterId,SubmitReview,getAllCourseReviews,
       editCourse} = require('../controllers/products')
+const { authorization } = require('../middleWares/auth')
 
-authorization= require('../middleWares/auth')
 //Router Class
 class ProductRouter{
   constructor(){
