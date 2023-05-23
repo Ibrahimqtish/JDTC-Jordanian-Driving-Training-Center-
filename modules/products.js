@@ -74,6 +74,7 @@ const usersSchema = new Schema({
       driving_license_back:{type:String,required:false},
       citizenship_id_front:{type:String,required:false},
       citizenship_id_back:{type:String,required:false},
+      city:{type:String,required:false},
 })
 
 const FeedbackSchema = new Schema({
