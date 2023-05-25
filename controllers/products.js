@@ -83,9 +83,12 @@ const getAllProducts = async (req , res)=>{
     //limit the number of returend elements
     if(limit)resulte = resulte.limit(limit)
     //sort resulte if sort not null
-    if(sort)  resulte = resulte.sort(sort)
+    if(sort){
+      const Sorting = {}
+      Sorting[sort] =sort =='coste'?'asc':'desc'
+      resulte = resulte.sort(Sorting)
+    }
     //check name
-
     if (fill){
         resulte = await resulte.populate('TrainingCenterId')
         for (let i of resulte){
@@ -100,6 +103,7 @@ const getAllProducts = async (req , res)=>{
 
     if(resulte){
       //send response back
+      console.log('resulte ' ,req.query)
       res.status(200).json(resulte)  
     }
     else {

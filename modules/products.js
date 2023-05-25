@@ -171,6 +171,8 @@ Course.watch().on('change' , async (data)=>{
             console.log("------------------------deleting related records to course-------------------------------")
             await Exams.deleteMany({courseID:data.documentKey._id})
             await QuastionBank.deleteMany({courseID:data.documentKey._id})
+            await order.deleteMany({courseID:data.documentKey._id})
+            await Exams.deleteMany({courseID:data.documentKey._id})
         }
 })
 QuastionBank.watch().on('change' , async (data)=>{
