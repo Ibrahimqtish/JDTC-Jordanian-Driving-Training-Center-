@@ -12,7 +12,7 @@ const  conntect = async () =>  {
    process.env.MANGO_URI, 
    //second param
    {useNewUrlParser: true,useUnifiedTopology: true,})
- console.log('connected sucssesflly to the database')
+   console.log('connected sucssesflly to the database')
 }
 //
 module.exports = {conntect}

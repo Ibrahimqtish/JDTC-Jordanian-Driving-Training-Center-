@@ -1,6 +1,6 @@
 const { response } = require('express');
 const { default: mongoose } = require('mongoose');
-const {Course, order, CourseFeedback} =  require('../modules/products');
+const {Course, order, CourseFeedback, TrainingCenter} =  require('../modules/products');
 const { PraperImage, PraperSingleImage } = require('../Utils/utils');
 
 
@@ -53,7 +53,11 @@ const getAllProducts = async (req , res)=>{
     //category params
     if(location){
       let countries = location.split(',')
-      queryParam.location = {$in:countries}
+      for (let i = 0;i < countries.length;i++)countries[i]=countries[i].trim() 
+      const center_ids = []
+      const TrainingCenters_ids = await TrainingCenter.find({location:{$in:countries}}).select('id')
+      for (let i = 0;i < TrainingCenters_ids.length;i++)center_ids.push(TrainingCenters_ids[i]['_id'])
+      queryParam.TrainingCenterId = {$in:center_ids}
     }
     //Filter the price
     if(priceLessThan && pricegreaterthan){

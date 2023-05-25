@@ -113,57 +113,76 @@ const pursh = async (req,res)=>{
    }
 }
 
-const placeRequest = async (req,res)=>{
-   const userID = req.userId
-   //get orders from requies body
-   const RequestBody = req.body
-   //fetch products data from data base
-   const courseID = RequestBody.courseID
 
-   const db_courses = await Course.find({_id:RequestBody.courseID})
-   console.log("Course From DB ",db_courses)
-   if (!db_courses){
-         return res.status(400).json({"message":"course not exsists"})
+const placeRequest = async (req,res)=>{
+   try{
+         const userID = req.userId
+         //get orders from requies body
+         const RequestBody = req.body
+         //fetch products data from data base
+         const courseID = RequestBody.courseID
+         const db_courses = await Course.find({_id:RequestBody.courseID})
+         console.log("Course From DB ",db_courses)
+         if (!db_courses){
+               return res.status(400).json({"message":"course not exsists"})
+         }
+         let prev_orders=await order.find({'userId':userID}).populate('courseID')   
+         if (CheckTimeConflicts(prev_orders,RequestBody)){
+            return res.status(400).json({"Message":"you have time conflict"})  
+         }
+         const NewOrders = await new order({'state':"pending",'userId':userID,'courseID':courseID,'start_time':RequestBody.start_time,"end_time":RequestBody.end_time,'requested_date':RequestBody.requested_date,order_data:db_courses}).save()
+         res.json(NewOrders)
+   }catch(err){
+         console.log(err)
+         res.sendStatus(500)
    }
-   let prev_orders=await order.find({'userId':userID}).populate('courseID')   
-   if (CheckTimeConflicts(prev_orders,RequestBody)){
-      return res.status(400).json({"Message":"you have time conflict"})  
-   }
-   const NewOrders = await new order({'state':"pending",'userId':userID,'courseID':courseID,'start_time':RequestBody.start_time,"end_time":RequestBody.end_time,'requested_date':RequestBody.requested_date,order_data:db_courses}).save()
-   res.json(NewOrders)
 }
 const updateProduct  = async (data) =>{
-      console.log(data)
-      const NewOrders = await order.updateOne({'_id':data.RequestId},{$set:{'state':"active"}})
-      return NewOrders
+   try{
+         console.log(data)
+         const NewOrders = await order.updateOne({'_id':data.RequestId},{$set:{'state':"active"}})
+         return NewOrders
+   }catch(err){
+         console.log(err)  
+   }
 }
 const AproveRequest  = async (req,res) =>{
-   const ReqeustBody = req.body 
-   console.log(ReqeustBody)
-   const NewOrders = await order.updateOne({_id:ReqeustBody.RequestId},{$set:{state:"RequestPayment"}})
-   console.log(NewOrders)
-   res.json(NewOrders)
+   try{
+      const ReqeustBody = req.body 
+      console.log(ReqeustBody)
+      const NewOrders = await order.updateOne({_id:ReqeustBody.RequestId},{$set:{state:"RequestPayment"}})
+      console.log(NewOrders)
+      res.json(NewOrders)
+   }catch(err){
+      res.sendStatus(500)
+   }
 }
 
 const webhook_callback =  (req , res)=>{
-   //get body contents
-   let payload = req.body
-   const sig = req.headers['stripe-signature'];
-   let event;
-   try {
-     //sign
-     event = stripe.webhooks.constructEvent(payload,sig,'whsec_48841faba8675861d5c5e9b800b4d8b39ddb0f60e20fa43797fbacb0b535e668')
+   try{
+         //get body contents
+         let payload = req.body
+         const sig = req.headers['stripe-signature'];
+         let event;
+         try {
+         //sign
+         event = stripe.webhooks.constructEvent(payload,sig,'whsec_48841faba8675861d5c5e9b800b4d8b39ddb0f60e20fa43797fbacb0b535e668')
+         }catch(err){
+         console.log(err.message)
+         return res.status(404).send()
+         }
+         if(event.type === 'checkout.session.completed'){
+            const session = event.data.object
+            data = JSON.parse(session.metadata.orders)
+            data.stipe_checkout_session_id = session.payment_intent
+            updateProduct(data)
+         }
+         res.status(200).send()
+
    }catch(err){
-    console.log(err.message)
-    return res.status(404).send()
+         console.log(err)
+         res.sendStatus(500)
    }
-   if(event.type === 'checkout.session.completed'){
-      const session = event.data.object
-      data = JSON.parse(session.metadata.orders)
-      data.stipe_checkout_session_id = session.payment_intent
-      updateProduct(data)
-   }
-   res.status(200).send()
 }
 
 module.exports = {pursh , webhook_callback,placeRequest,AproveRequest,get_all_user_requests}
