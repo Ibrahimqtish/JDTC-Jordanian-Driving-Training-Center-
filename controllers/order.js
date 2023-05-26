@@ -68,7 +68,8 @@ const pursh = async (req,res)=>{
       //fetch products data from data base
       const courseID = RequestBody.courseID
       //request id
-      const RequestId = RequestBody.RequestId
+      console.log("RequestBody " , RequestBody)
+      const RequestId = RequestBody.requestId
       const db_courses = await Course.find({_id:RequestBody.courseID})
       if (!db_courses){
             return res.status(400).json({"message":"course not exsists"})
@@ -139,7 +140,7 @@ const placeRequest = async (req,res)=>{
 }
 const updateProduct  = async (data) =>{
    try{
-         console.log(data)
+         console.log("update product " , data)
          const NewOrders = await order.updateOne({'_id':data.RequestId},{$set:{'state':"active"}})
          return NewOrders
    }catch(err){
