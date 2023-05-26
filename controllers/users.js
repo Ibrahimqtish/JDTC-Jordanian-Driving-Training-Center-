@@ -273,9 +273,7 @@ async function getuserprofile(req, res) {
           setUserGroup(ProfileData,code)
         }
         // ProfileData.isUser=true
-        if (upcomingsessions){
-            ProfileData.upcomingsessions=upcomingsessions
-        }
+        if (upcomingsessions){ProfileData.upcomingsessions=upcomingsessions}
         ProfileData.profile_pic = ProfileData.profile_pic ? PraperSingleImage(ProfileData.profile_pic,req.headers.host) : ""
         ProfileData.driving_license_front = ProfileData.driving_license_front ? PraperSingleImage(ProfileData.driving_license_front,req.headers.host) : ""
         ProfileData.driving_license_back = ProfileData.driving_license_back ? PraperSingleImage(ProfileData.driving_license_back,req.headers.host) : ""
