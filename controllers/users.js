@@ -235,7 +235,7 @@ const edit_user_documents = async(req , res)=>{
   }
 const setUserGroup =(response,code) =>{
   switch (code){
-    case 'TRANIER':
+    case 'TRAINER':
       response.isTranier=true;break;
     case 'ADMIN':
       response.isAdmin=true;break;
@@ -246,22 +246,42 @@ const setUserGroup =(response,code) =>{
   }
 
 }
+
+async function getUserSessions(userId){
+  const UpComingSessions = await order.find({'userId':userId,'state':'active'})
+  if (UpComingSessions.length){
+    let upcomming_session = UpComingSessions[0] 
+    for (let i = 0;i < UpComingSessions.length;i++){
+        if (UpComingSessions[i].requested_date < upcomming_session.requested_date){
+            if (UpComingSessions[i].start_time < upcomming_session.requested_date){
+              upcomming_session=UpComingSessions[i]
+            }
+        }
+    }
+    return upcomming_session
+  }
+}
 async function getuserprofile(req, res) {
     const userId = req.userId;
     if (userId) {
-      const userData = user.find({ _id: userId }).then(async (ressponse) => {
-        if (ressponse[0].group_id){
-          const group = await userGroup.findOne({_id:ressponse[0].group_id})
+      const upcomingsessions=await getUserSessions(userId)
+      const userData = user.findOne({ _id: userId }).then(async (ressponse) => {
+        const ProfileData = ressponse.toObject()
+        if (ProfileData.group_id){
+          const group = await userGroup.findOne({_id:ProfileData.group_id})
           const code =  group.code ? group.code : ''
-          setUserGroup(ressponse[0],code)
+          setUserGroup(ProfileData,code)
         }
-        // ressponse[0].isUser=true
-        ressponse[0].profile_pic = ressponse[0].profile_pic ? PraperSingleImage(ressponse[0].profile_pic,req.headers.host) : ""
-        ressponse[0].driving_license_front = ressponse[0].driving_license_front ? PraperSingleImage(ressponse[0].driving_license_front,req.headers.host) : ""
-        ressponse[0].driving_license_back = ressponse[0].driving_license_back ? PraperSingleImage(ressponse[0].driving_license_back,req.headers.host) : ""
-        ressponse[0].citizenship_id_front = ressponse[0].citizenship_id_front ? PraperSingleImage(ressponse[0].citizenship_id_front,req.headers.host) : ""
-        ressponse[0].citizenship_id_back = ressponse[0].citizenship_id_back ? PraperSingleImage(ressponse[0].citizenship_id_back,req.headers.host) : ""
-        return res.json(ressponse[0]);
+        // ProfileData.isUser=true
+        if (upcomingsessions){
+            ProfileData.upcomingsessions=upcomingsessions
+        }
+        ProfileData.profile_pic = ProfileData.profile_pic ? PraperSingleImage(ProfileData.profile_pic,req.headers.host) : ""
+        ProfileData.driving_license_front = ProfileData.driving_license_front ? PraperSingleImage(ProfileData.driving_license_front,req.headers.host) : ""
+        ProfileData.driving_license_back = ProfileData.driving_license_back ? PraperSingleImage(ProfileData.driving_license_back,req.headers.host) : ""
+        ProfileData.citizenship_id_front = ProfileData.citizenship_id_front ? PraperSingleImage(ProfileData.citizenship_id_front,req.headers.host) : ""
+        ProfileData.citizenship_id_back = ProfileData.citizenship_id_back ? PraperSingleImage(ProfileData.citizenship_id_back,req.headers.host) : ""
+        return res.json(ProfileData);
       });
     } else {
       return res.status(401).send({ message: "unauthorized user" });

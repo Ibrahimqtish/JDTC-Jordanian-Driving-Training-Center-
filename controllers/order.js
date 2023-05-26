@@ -59,7 +59,6 @@ const get_all_user_requests = async (req,res)=>{
       res.json({'message':'Something went wrong'})
    }
 }
-
 const pursh = async (req,res)=>{
    try{
       const userID = req.userId
@@ -68,7 +67,6 @@ const pursh = async (req,res)=>{
       //fetch products data from data base
       const courseID = RequestBody.courseID
       //request id
-      console.log("RequestBody " , RequestBody)
       const RequestId = RequestBody.requestId
       const db_courses = await Course.find({_id:RequestBody.courseID})
       if (!db_courses){
