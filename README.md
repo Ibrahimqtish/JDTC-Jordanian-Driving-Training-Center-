@@ -6,7 +6,7 @@ JDTC (Jordanian Driving Training Center) is an innovative website developed as a
 
 📖 **Enhanced Learning Experience:** JDTC enhances the learning experience for driving school students. With a user-friendly interface, students can easily access the platform, take practice driving exams online, and assess their knowledge before the official test. This not only saves time but also boosts confidence.
 
-📱 **Booking System for Personalized Lessons:** The platform features a booking system that enables students to schedule driving lessons with professional trainers. Students can select preferred time slots and trainers based on availability and expertise, fostering efficient communication between students and instructors and enhancing the overall learning process.
+🌟 **Booking System for Personalized Lessons:** The platform features a booking system that enables students to schedule driving lessons with professional trainers. Students can select preferred time slots and trainers based on availability and expertise, fostering efficient communication between students and instructors and enhancing the overall learning process.
 
 🌐 **Built on Node.js and React:** JDTC is built on the powerful Node.js and React frameworks, ensuring a robust and responsive website. We have implemented best practices to ensure efficient code structure, optimized performance, and a seamless user interaction.
 
