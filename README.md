@@ -19,3 +19,8 @@ Whether you're a novice driver or someone looking to enhance your skills and acq
 #Website Screens :
 ![Picture1](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/96ce893d-ef49-493e-a49e-e29c2b052a62)
 ![Picture2](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/aa28f74d-7243-4543-8688-820ef1bcdeb5)
+![Picture7](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/afdaea26-3305-4722-96d8-c0d5d37efa82)
+![Picture3](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/560dfb1c-e0c4-4339-a7cc-c98d69a95163)
+![Picture4](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/86ab8c0a-899f-4ae7-a2cb-dbdb71004906)
+![Picture5](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/2a04e666-d959-4da8-8b5e-5a4713f3dd56)
+![Picture6](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/22f77c36-b8ed-4a67-8b48-6d0dab3b69d7)
