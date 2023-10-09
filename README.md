@@ -17,4 +17,4 @@ By creating JDTC, we aim to address the needs of driving school students, provid
 Whether you're a novice driver or someone looking to enhance your skills and acquire a Jordanian driving license, JDTC is your trusted partner. We are committed to simplicity, personalization, exam readiness, and secure payments, making us the ideal choice for becoming a safe and responsible driver on Jordan's roads.
 
 #Website Screens :
-![JDTC Logo](C:\Users\ibrah\Pictures\Important)
+![JDTC Logo](C:\Users\ibrah\Pictures\Important\pnj)
