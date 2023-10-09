@@ -1,6 +1,6 @@
-#(JDTC): A Modern Driving Education Solution
+# (JDTC): A Modern Driving Education Solution
 
-JDTC is an innovative website developed as a graduation project, utilizing Node.js and React technologies. Our mission is to revolutionize driving education in Jordan by offering a convenient and secure platform for both aspiring drivers and experienced instructors.
+JDTC (Jordanian Driving Training Center) is an innovative website developed as a graduation project, utilizing Node.js and React technologies. Our mission is to revolutionize driving education in Jordan by offering a convenient and secure platform for both aspiring drivers and experienced instructors.
 
 **Key Features:**
 
