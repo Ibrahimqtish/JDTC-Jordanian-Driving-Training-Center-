@@ -17,12 +17,13 @@ By creating JDTC, we aim to address the needs of driving school students, provid
 Whether you're a novice driver or someone looking to enhance your skills and acquire a Jordanian driving license, JDTC is your trusted partner. We are committed to simplicity, personalization, exam readiness, and secure payments, making us the ideal choice for becoming a safe and responsible driver on Jordan's roads.
 
 #Website Screens :
-
 ![Picture1](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/0a70c3af-5ea2-44e3-a200-19d3fc2e85aa)
 ![Picture2](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/7ebbff2b-a913-41dd-b521-d51ff25221e5)
 ![Picture3](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/0818d78e-007e-4f2e-b317-127629a468ff)
 ![Picture6](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/a19f4d16-6679-470e-9b0b-0b553e8e60e8)
 ![Picture7](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/df417dc2-cbc3-44a9-a4a4-28545655941d)
+
+#Admin Screens :
 ![Picture4](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/18ad0b6c-dabe-4a36-9115-d5ec495ec0f1)
 ![Picture5](https://github.com/Ibrahimqtish/JDTC-Jordanian-Driving-Training-Center-/assets/146377766/53de4d6e-babf-4cbe-a504-c04610b14a1b)
 
